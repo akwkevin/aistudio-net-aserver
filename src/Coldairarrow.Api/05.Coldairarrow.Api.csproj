@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Coldairarrow.Api</RootNamespace>
+    <AssemblyName>Coldairarrow.Api</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <!--输出依赖包的xml-->
+  <Target Name="CopyReferenceFiles" BeforeTargets="Build">
+    <ItemGroup>
+      <ReferenceFiles Include="%(Reference.RelativeDir)%(Reference.Filename).xml;%(Reference.RelativeDir)%(Reference.Filename).pdb" />
+    </ItemGroup>
+
+    <Message Text="Copying reference files to $(OutputPath)" Importance="High" />
+    <Copy SourceFiles="@(ReferenceFiles)" DestinationFolder="$(OutputPath)" Condition="Exists('%(RootDir)%(Directory)%(Filename)%(Extension)')" />
+    <Message Text="Copying reference files to $(PublishDir)" Importance="High" />
+    <Copy SourceFiles="@(ReferenceFiles)" DestinationFolder="$(PublishDir)" Condition="Exists('%(RootDir)%(Directory)%(Filename)%(Extension)')" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Colder.Logging.Serilog" Version="1.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.9.4" />
+    <PackageReference Include="Caching.CSRedis" Version="3.6.50" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AIStudio.Service\00.AIStudio.Service.csproj" />
+    <ProjectReference Include="..\Coldairarrow.Business\04.Coldairarrow.Business.csproj" />
+    <ProjectReference Include="..\Coldairarrow.Entity\02.Coldairarrow.Entity.csproj" />
+    <ProjectReference Include="..\Coldairarrow.Util\01.Coldairarrow.Util.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="0_install.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="0_uninstall.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="BuildCodeTemplate\Business.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="BuildCodeTemplate\Controller.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="BuildCodeTemplate\EditForm.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="BuildCodeTemplate\IBusiness.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="BuildCodeTemplate\List.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Dockerfile">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="nssm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  
+</Project>
