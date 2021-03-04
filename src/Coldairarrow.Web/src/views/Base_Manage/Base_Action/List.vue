@@ -98,10 +98,10 @@ export default {
     EditForm,
     PermissionList
   },
-  mounted() {
+  mounted () {
     this.getDataList()
   },
-  data() {
+  data () {
     return {
       data: [],
       pagination: {
@@ -119,13 +119,13 @@ export default {
     }
   },
   methods: {
-    handleTableChange(pagination, filters, sorter) {
+    handleTableChange (pagination, filters, sorter) {
       this.pagination = { ...pagination }
       this.filters = { ...filters }
       this.sorter = { ...sorter }
       this.getDataList()
     },
-    getDataList() {
+    getDataList () {
       this.selectedRowKeys = []
 
       this.loading = true
@@ -145,30 +145,30 @@ export default {
           this.pagination = pagination
         })
     },
-    onSelectChange(selectedRowKeys) {
+    onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
-    hasSelected() {
+    hasSelected () {
       return this.selectedRowKeys.length > 0
     },
-    hanldleAdd() {
+    hanldleAdd () {
       this.$refs.editForm.openForm()
     },
-    handleEdit(id) {
+    handleEdit (id) {
       this.$refs.editForm.openForm(id)
     },
-    handleDelete(ids) {
+    handleDelete (ids) {
       var thisObj = this
       this.$confirm({
         title: '确认删除吗?',
-        onOk() {
+        onOk () {
           return new Promise((resolve, reject) => {
             thisObj.submitDelete(ids, resolve, reject)
           })
         }
       })
     },
-    submitDelete(ids, resolve, reject) {
+    submitDelete (ids, resolve, reject) {
       this.$http.post('/Base_Manage/Base_Action/DeleteData', ids).then(resJson => {
         resolve()
 
@@ -181,7 +181,7 @@ export default {
         }
       })
     },
-    managePermission(row) {
+    managePermission (row) {
       this.menuName = `【${row.Text}】页面权限`
       this.$nextTick(() => {
         this.$refs.permissionList.setParentId(row.Id)

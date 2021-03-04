@@ -40,7 +40,7 @@ export default {
       default: null
     }
   },
-  data() {
+  data () {
     return {
       layout: {
         labelCol: { span: 5 },
@@ -58,7 +58,7 @@ export default {
     }
   },
   methods: {
-    init() {
+    init () {
       this.visible = true
       this.entity = {}
       this.$nextTick(() => {
@@ -76,7 +76,7 @@ export default {
         }
       })
     },
-    openForm(id) {
+    openForm (id) {
       this.init()
 
       if (id) {
@@ -87,11 +87,11 @@ export default {
         })
       }
     },
-    onCheck(checkedKeys, e) {
+    onCheck (checkedKeys, e) {
       // console.log('勾选')
       // console.log(checkedKeys)
       // console.log(this.checkedKeys)
-      //勾选事件,勾选节点时同时勾选所有父节点和子节点
+      // 勾选事件,勾选节点时同时勾选所有父节点和子节点
       var value = e.node.value
       var newChecked = []
       if (e.checked) {
@@ -100,7 +100,7 @@ export default {
         var addNodes = parentIds.concat(children).filter(item => !this.checkedKeys.checked.includes(item))
         newChecked = this.checkedKeys.checked.concat(addNodes)
       } else {
-        //取消勾选事件,取消勾选所有子节点
+        // 取消勾选事件,取消勾选所有子节点
         var children = TreeHelper.getChildrenIds(value, this.allActionList)
         children.push(value)
         newChecked = this.checkedKeys.checked.filter(item => !children.includes(item))
@@ -108,7 +108,7 @@ export default {
 
       this.checkedKeys = { checked: newChecked }
     },
-    handleSubmit() {
+    handleSubmit () {
       this.$refs['form'].validate(valid => {
         if (!valid) {
           return

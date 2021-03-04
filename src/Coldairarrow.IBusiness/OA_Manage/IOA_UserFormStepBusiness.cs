@@ -8,7 +8,7 @@ namespace Coldairarrow.Business.OA_Manage
 {
     public interface IOA_UserFormStepBusiness : IBaseBusiness<OA_UserFormStep>
     {
-        Task<PageResult<OA_UserFormStep>> GetDataListAsync(PageInput<OA_UserFormStepInputDTO> pagination, string condition, string keyword);
+        Task<PageResult<OA_UserFormStep>> GetDataListAsync(PageInput<OA_UserFormStepInputDTO> pagination);
         Task<OA_UserFormStep> GetTheDataAsync(string id);
         Task AddDataAsync(OA_UserFormStep data);
         Task UpdateDataAsync(OA_UserFormStep data);
@@ -17,6 +17,7 @@ namespace Coldairarrow.Business.OA_Manage
 
     public class OA_UserFormStepInputDTO
     {
+        public string condition { get; set; }
         public string keyword { get; set; }
     }
 

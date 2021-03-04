@@ -90,7 +90,8 @@
 </template>
 
 <script>
-import TokenCache from '@/utils/cache/TokenCache'
+import { timeFix } from '@/utils/util'
+import { mapActions } from 'vuex'
 
 export default {
   data () {
@@ -108,6 +109,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['Login', 'Logout']),
     handleTabClick (key) {
       this.customActiveKey = key
       // this.form.resetFields()
@@ -120,11 +122,8 @@ export default {
         if (!errors) {
           var values = this.form.getFieldsValue()
           this.loading = true
-          this.$http.post('/Base_Manage/Home/SubmitLogin', values).then(resJson => {
-            this.loading = false
-
-            if (resJson.Success) {
-              TokenCache.setToken(resJson.Data)
+          this.Login(values)
+            .then(resJson => {
               // 保存密码
               if (values['savePwd']) {
                 localStorage.setItem('userName', values['userName'])
@@ -134,10 +133,18 @@ export default {
                 localStorage.removeItem('password')
               }
               this.$router.push({ path: '/' })
-            } else {
-              this.$message.error(resJson.Msg)
-            }
-          })
+
+              setTimeout(() => {
+                this.$notification.success({
+                  message: '欢迎',
+                  description: `${timeFix()}，欢迎回来`
+                })
+              }, 1000)
+            })
+            .catch(err => this.$message.error(err))
+            .finally(() => {
+              this.loading = false
+            })
         }
       })
     }

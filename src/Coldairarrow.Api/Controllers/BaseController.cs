@@ -25,7 +25,7 @@ namespace Coldairarrow.Api
             if (obj.ContainsProperty("CreatorId"))
                 obj.SetPropertyValue("CreatorId", op?.UserId);
             if (obj.ContainsProperty("CreatorName"))
-                obj.SetPropertyValue("CreatorName", op?.Property?.RealName);
+                obj.SetPropertyValue("CreatorName", op?.Property?.UserName);
         }
 
         protected void UpdateEntity(object obj)

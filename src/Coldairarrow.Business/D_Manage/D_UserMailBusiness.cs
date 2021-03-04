@@ -24,64 +24,64 @@ namespace Coldairarrow.Business.D_Manage
 
         #region 外部接口
 
-        public async Task<PageResult<D_UserMail>> GetDataListAsync(PageInput<D_UserMailInputDTO> pagination, string condition, string keyword, string userId, string creatorId, bool draft)
+        public async Task<PageResult<D_UserMail>> GetDataListAsync(PageInput<D_UserMailInputDTO> input)
         {
             var q = GetIQueryable();
             var where = LinqHelper.True<D_UserMail>();
 
             //筛选
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserMail, bool>(
-                    ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
-            if (!userId.IsNullOrEmpty())
+            if (!input.Search.userId.IsNullOrEmpty())
             {
-                where = where.And(p => p.UserIds.Contains("^" + userId + "^"));
+                where = where.And(p => p.UserIds.Contains("^" + input.Search.userId + "^"));
             }
-            if (!creatorId.IsNullOrEmpty())
+            if (!input.Search.creatorId.IsNullOrEmpty())
             {
-                where = where.And(p => p.CreatorId.Contains(creatorId));
+                where = where.And(p => p.CreatorId.Contains(input.Search.creatorId));
             }
-            where = where.And(p => p.IsDraft == draft);
+            where = where.And(p => p.IsDraft == input.Search.draft);
 
-            return await q.Where(where).GetPageResultAsync(pagination);
+            return await q.Where(where).GetPageResultAsync(input);
         }
 
-        public async Task<PageResult<D_UserMail>> GetHistoryDataListAsync(PageInput<D_UserMailInputDTO> pagination, string condition, string keyword, string userId, string creatorId, bool draft, bool markflag, DateTime? start = null, DateTime? end = null)
+        public async Task<PageResult<D_UserMail>> GetHistoryDataListAsync(PageInput<D_UserMailInputDTO> input)
         {
             Expression<Func<D_UserMail, bool>> where = LinqHelper.True<D_UserMail>();
 
             //筛选
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserMail, bool>(
-                    ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
-            if (!userId.IsNullOrEmpty())
+            if (!input.Search.userId.IsNullOrEmpty())
             {
-                where = where.And(p => p.UserIds.Contains("^" + userId + "^"));
-                if (markflag == true)
+                where = where.And(p => p.UserIds.Contains("^" + input.Search.userId + "^"));
+                if (input.Search.markflag == true)
                 {
-                    where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + userId + "^"));
+                    where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
                 }
             }
-            if (!creatorId.IsNullOrEmpty())
+            if (!input.Search.creatorId.IsNullOrEmpty())
             {
-                where = where.And(p => p.CreatorId.Contains(creatorId));
+                where = where.And(p => p.CreatorId.Contains(input.Search.creatorId));
             }
-            where = where.And(p => p.IsDraft == draft);
+            where = where.And(p => p.IsDraft == input.Search.draft);
 
-            var dataList = await GetPageHistoryDataList(pagination, where, start, end, "CreateTime");
+            var dataList = await GetPageHistoryDataList(input, where, input.Search.start, input.Search.end, "CreateTime");
 
             return dataList;
         }
 
         public async Task<D_UserMail> GetTheDataAsync(string id)
         {
-            return await GetEntityAsync(null, id);
+            return await GetEntityAsync(id);
         }
 
         public async Task AddDataAsync(D_UserMail data)

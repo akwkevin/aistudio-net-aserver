@@ -16,6 +16,8 @@ namespace Coldairarrow.Business.Base_Manage
         Task UpdateDataAsync(UserEditInputDTO input);
         Task DeleteDataAsync(List<string> ids);
         Task SetUserRoleAsync(string userId, List<string> roleIds);
+
+        Task<string> GetAvatar(string userId);
     }
 
     [Map(typeof(Base_User))]

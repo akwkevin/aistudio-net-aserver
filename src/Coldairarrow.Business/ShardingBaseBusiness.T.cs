@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Coldairarrow.IBusiness;
 using LinqKit;
+using Coldairarrow.Entity;
 
 namespace Coldairarrow.Business
 {
@@ -103,6 +104,15 @@ namespace Coldairarrow.Business
         public async Task<int> InsertAsync(List<T> entities)
         {
             return await ShardingDb.InsertAsync(entities);
+        }
+
+        /// <summary>
+        /// 添加多条数据
+        /// </summary>
+        /// <param name="entities">实体对象集合</param>
+        public async Task<int> InsertAsync(List<object> entities)
+        {
+            return await ShardingDb.InsertAsync(entities.OfType<T>().ToList());
         }
 
         /// <summary>
@@ -290,6 +300,15 @@ namespace Coldairarrow.Business
         public async Task<int> UpdateAsync(List<T> entities)
         {
             return await ShardingDb.UpdateAsync(entities);
+        }
+
+        /// <summary>
+        /// 更新多条数据
+        /// </summary>
+        /// <param name="entities">数据列表</param>
+        public async Task<int> UpdateAsync(List<object> entities)
+        {
+            return await ShardingDb.UpdateAsync(entities.OfType<T>().ToList());
         }
 
         /// <summary>
@@ -579,7 +598,7 @@ namespace Coldairarrow.Business
             expression = expression.And(newWhere);
 
 
-            return await ShardingDb.GetIShardingQueryable<T>().Where(expression).ToListAsync();
+            return await ShardingDb.GetIShardingQueryable<T>().Where(expression).OrderBy(dateField).ToListAsync();
         }
 
         public async Task<PageResult<T>> GetPageHistoryDataList(PageInput pageInput, Expression<Func<T, bool>> expression, DateTime? start, DateTime? end, string dateField = "CreateTime")
@@ -610,6 +629,7 @@ namespace Coldairarrow.Business
 
         }
 
+       
         #endregion
     }
 }

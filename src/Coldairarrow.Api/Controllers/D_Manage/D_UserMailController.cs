@@ -1,4 +1,5 @@
 ﻿using AIStudio.Service.WebSocketEx;
+using AutoMapper;
 using Coldairarrow.Business.Base_Manage;
 using Coldairarrow.Business.D_Manage;
 using Coldairarrow.Entity.D_Manage;
@@ -16,7 +17,7 @@ namespace Coldairarrow.Api.Controllers.D_Manage
     {
         #region DI
 
-        public D_UserMailController(ID_UserMailBusiness t_UserMailBus, ICustomWebSocketMessageHandler customWebSocketMessageHandler, IOperator __operator, IBase_UserBusiness userBus)
+        public D_UserMailController(ID_UserMailBusiness t_UserMailBus, ICustomWebSocketMessageHandler customWebSocketMessageHandler, IOperator __operator, IBase_UserBusiness userBus, IMapper mapper)
         {
             _t_UserMailBus = t_UserMailBus;
             _userBus = userBus;
@@ -28,6 +29,9 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         ICustomWebSocketMessageHandler _customWebSocketMessageHandler { get; }
         IBase_UserBusiness _userBus { get; }
         IOperator _operator { get; }
+
+        IMapper _mapper { get; }
+
         #endregion
 
         #region 获取
@@ -35,45 +39,34 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         /// <summary>
         /// 获取列表
         /// </summary>
-        /// <param name="pagination">分页参数</param>
-        /// <param name="condition">查询字段</param>
-        /// <param name="keyword">关键字</param>
-        /// <param name="userId"></param>
-        /// <param name="creatorId"></param>
-        /// <param name="draft"></param>
+        /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<PageResult<D_UserMail>> GetDataList(PageInput<D_UserMailInputDTO> pagination, string condition, string keyword, string userId, string creatorId, bool draft)
+        public async Task<PageResult<D_UserMail>> GetDataList(PageInput<D_UserMailInputDTO> input)
         {
-            var dataList = await _t_UserMailBus.GetDataListAsync(pagination, condition, keyword, userId, creatorId, draft);
+            var dataList = await _t_UserMailBus.GetDataListAsync(input);
 
             return dataList;
         }
 
-        ///// <summary>
-        ///// 获取列表，历史分页
-        ///// </summary>
-        ///// <param name="pagination"></param>
-        ///// <param name="condition"></param>
-        ///// <param name="keyword"></param>
-        ///// <param name="userId"></param>
-        ///// <param name="creatorId"></param>
-        ///// <param name="draft"></param>
-        ///// <param name="markflag"></param>
-        ///// <param name="start"></param>
-        ///// <param name="end"></param>
-        ///// <returns></returns>
-        //[HttpPost]
-        //public async Task<AjaxResult<List<D_UserMailDTO>>> GetHistoryDataList(PageInput<D_UserMailInputDTO> pagination, string condition, string keyword, string userId, string creatorId, bool draft, bool markflag, DateTime? start, DateTime? end)
-        //{
-        //    var dataList = Mapper.Map<List<D_UserMailDTO>>(await _t_UserMailBus.GetHistoryDataListAsync(pagination, condition, keyword, userId, creatorId, draft, markflag, start, end));
-        //    dataList.ForEach(async p =>
-        //    {
-        //        p.Avatar = await _userBus.GetAvatar(p.CreatorId);
-        //    });
+        /// <summary>
+        /// 获取列表，历史分页
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<PageResult<D_UserMailDTO>> GetHistoryDataList(PageInput<D_UserMailInputDTO> input)
+        {
+            var dataList = await _t_UserMailBus.GetHistoryDataListAsync(input);
 
-        //    return DataTable(dataList, pagination);
-        //}
+            var data = new PageResult<D_UserMailDTO>() { Total = dataList.Total, Data = _mapper.Map<List<D_UserMailDTO>>(dataList.Data) };
+            data.Data.ForEach(async p =>
+            {
+                p.Avatar = await _userBus.GetAvatar(p.CreatorId);
+            });
+
+            return data;
+        }
 
         /// <summary>
         /// 
@@ -89,12 +82,12 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         /// <summary>
         /// 获取详情
         /// </summary>
-        /// <param name="id">Id</param>
+        /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<D_UserMail> GetTheData(string id)
+        public async Task<D_UserMail> GetTheData(IdInputDTO input)
         {
-            var mail = await _t_UserMailBus.GetTheDataAsync(id);
+            var mail = await _t_UserMailBus.GetTheDataAsync(input.id);
             string userId = _operator?.UserId;
             if (!string.IsNullOrEmpty(userId) && mail.UserIds.Contains(userId) && !(mail.ReadingMarks ?? "").Contains(userId))
             {

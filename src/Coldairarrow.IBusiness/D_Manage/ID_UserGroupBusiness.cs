@@ -8,7 +8,7 @@ namespace Coldairarrow.Business.D_Manage
 {
     public interface ID_UserGroupBusiness : IBaseBusiness<D_UserGroup>
     {
-        Task<PageResult<D_UserGroup>> GetDataListAsync(PageInput<D_UserGroupInputDTO> pagination, string condition, string keyword);
+        Task<PageResult<D_UserGroup>> GetDataListAsync(PageInput<D_UserGroupInputDTO> input);
         Task<D_UserGroup> GetTheDataAsync(string id);
         Task AddDataAsync(D_UserGroup data);
         Task UpdateDataAsync(D_UserGroup data);
@@ -17,6 +17,7 @@ namespace Coldairarrow.Business.D_Manage
 
     public class D_UserGroupInputDTO
     {
+        public string condition { get; set; }
         public string keyword { get; set; }
     }
 }

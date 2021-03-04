@@ -15,6 +15,7 @@ using Coldairarrow.Business.Quartz_Manage;
 using Coldairarrow.Entity.Quartz_Manage;
 using Coldairarrow.Business.OA_Manage;
 using Coldairarrow.Entity.OA_Manage;
+using Quartz;
 
 namespace Coldairarrow.Api
 {
@@ -225,7 +226,7 @@ namespace Coldairarrow.Api
                         Interval = "0/10 * * * * ?",
                         ApiUrl = "SaveMessageJob",
                         RequestType = "System",
-                        Status = 0,
+                        Status = (int)TriggerState.Normal,
                         ForbidEdit = true,
                         CreateTime = DateTime.Now,
                     };
@@ -251,7 +252,7 @@ namespace Coldairarrow.Api
                         Interval = "0/10 * * * * ?",
                         ApiUrl = "PushMessageJob",
                         RequestType = "System",
-                        Status = 0,
+                        Status = (int)TriggerState.Normal,
                         ForbidEdit = true,
                         CreateTime = DateTime.Now,
                     };
@@ -263,6 +264,33 @@ namespace Coldairarrow.Api
                 else
                 {
                     logger.LogDebug("pushMessageJob already exists");
+                }
+
+                var textJob = quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "GetLog").Result;
+
+                if (textJob == null)
+                {
+                    textJob = new Quartz_Task()
+                    {
+                        Id = IdHelper.GetId(),
+                        TaskName = "GetLog",
+                        GroupName = "Test",
+                        Interval = "0/10 * * * * ?",
+                        ApiUrl = "http://localhost:5000/Test/GetLogList",
+                        RequestType = "System",
+                        Status = (int)TriggerState.Paused,
+                        CreateTime = DateTime.Now,
+                        AuthKey = "Authorization",
+                        AuthValue = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJBZG1pbiIsImV4cCI6MTYxMzQ1NTI0MX0.XbnD6R0Ozgp1xoI6BUrRjYaHwRYYAJ7OgU6gRO1sdbA",
+                    };
+
+                    var result = quartz_TaskBusiness.InsertAsync(textJob).Result;
+
+                    logger.LogDebug("textJob created");
+                }
+                else
+                {
+                    logger.LogDebug("textJob already exists");
                 }
 
             }

@@ -20,12 +20,11 @@ namespace AIStudio.Service.Quartz
             {
                 if (task.CreateTime == DateTime.MinValue)
                 {
-                    //task.InitEntity();
+                    task.CreateTime = DateTime.Now;
                     _quartz_TaskBusiness.InsertAsync(task).Wait();
                 }
                 else
                 {
-                    //task.UpdateEntity();
                     _quartz_TaskBusiness.UpdateAsync(task).Wait();
                 }
             }

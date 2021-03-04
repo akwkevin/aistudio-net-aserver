@@ -9,7 +9,7 @@ namespace Coldairarrow.Business.OA_Manage
     public interface IOA_DefFormBusiness : IBaseBusiness<OA_DefForm>
     {
         Task<List<OA_DefFormTree>> GetTreeDataListAsync(string type, List<string> roleidlist);
-        Task<PageResult<OA_DefFormDTO>> GetDataListAsync(PageInput<OA_DefFormInputDTO> pagination, string condition, string keyword);
+        Task<PageResult<OA_DefFormDTO>> GetDataListAsync(PageInput<OA_DefFormInputDTO> pagination);
         Task<OA_DefFormDTO> GetTheDataAsync(string id);
         Task AddDataAsync(OA_DefForm data);
         Task UpdateDataAsync(OA_DefForm data);
@@ -19,6 +19,8 @@ namespace Coldairarrow.Business.OA_Manage
     public class OA_DefFormInputDTO
     {
         public string keyword { get; set; }
+
+        public string condition { get; set; }
     }
 
     [Map(typeof(OA_DefForm))]

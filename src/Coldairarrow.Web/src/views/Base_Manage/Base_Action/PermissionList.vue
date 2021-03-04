@@ -45,7 +45,7 @@ const columns = [
   { title: '操作', dataIndex: 'operation', scopedSlots: { customRender: 'operation' } }
 ]
 export default {
-  data() {
+  data () {
     return {
       data: [],
       columns,
@@ -54,7 +54,7 @@ export default {
     }
   },
   methods: {
-    handleChange(value, key, column) {
+    handleChange (value, key, column) {
       const newData = [...this.data]
       const target = newData.filter(item => key === item.key)[0]
       if (target) {
@@ -62,7 +62,7 @@ export default {
         this.data = newData
       }
     },
-    edit(key) {
+    edit (key) {
       const newData = [...this.data]
       const target = newData.filter(item => key === item.key)[0]
       if (target) {
@@ -70,7 +70,7 @@ export default {
         this.data = newData
       }
     },
-    save(key) {
+    save (key) {
       const newData = [...this.data]
       const target = newData.filter(item => key === item.key)[0]
       if (target) {
@@ -79,7 +79,7 @@ export default {
         this.resetCache(newData)
       }
     },
-    cancel(key) {
+    cancel (key) {
       const newData = [...this.data]
       const target = newData.filter(item => key === item.key)[0]
       if (target) {
@@ -88,11 +88,11 @@ export default {
         this.data = newData
       }
     },
-    onDelete(key) {
+    onDelete (key) {
       const data = [...this.data]
       this.data = data.filter(item => item.key !== key)
     },
-    handleAdd() {
+    handleAdd () {
       const newData = {
         key: uuid.v4(),
         Name: '权限名',
@@ -102,10 +102,10 @@ export default {
       }
       this.data = [...this.data, newData]
     },
-    getPermissionList() {
+    getPermissionList () {
       return this.data
     },
-    handleSave() {
+    handleSave () {
       this.loading = true
       this.$http
         .post('/Base_Manage/Base_Action/SavePermission', {
@@ -122,10 +122,10 @@ export default {
           }
         })
     },
-    resetCache(dataSource) {
-        this.cacheData = dataSource.map(item => ({ ...item }))
+    resetCache (dataSource) {
+      this.cacheData = dataSource.map(item => ({ ...item }))
     },
-    getDataList() {
+    getDataList () {
       this.loading = true
       this.$http
         .post('/Base_Manage/Base_Action/GetPermissionList', {
@@ -138,7 +138,7 @@ export default {
           this.resetCache(this.data)
         })
     },
-    init(parentId) {
+    init (parentId) {
       this.parentId = parentId
       this.data = []
       if (this.parentId) {

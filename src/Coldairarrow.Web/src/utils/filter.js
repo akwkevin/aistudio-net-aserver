@@ -18,3 +18,13 @@ Vue.filter('dayjs', function (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
 Vue.filter('moment', function (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
   return moment(dataStr).format(pattern)
 })
+
+Vue.filter('AvatarFilter', function (data) {
+  if (data === null || data === '' || typeof data === 'undefined') {
+    return require('@/images/Images/Luffy.jpg')
+  } else if (data.indexOf('/Images') === 0) {
+    return require('@/images' + data)
+  } else {
+    return data
+  }
+})

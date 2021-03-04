@@ -24,23 +24,23 @@ namespace Coldairarrow.Business.D_Manage
 
         #region 外部接口
 
-        public async Task<PageResult<D_UserMessage>> GetDataListAsync(PageInput<D_UserMessageInputDTO> pageInput, string condition, string keyword)
+        public async Task<PageResult<D_UserMessage>> GetDataListAsync(PageInput<D_UserMessageInputDTO> input)
         {
             var q = GetIQueryable();
             var where = LinqHelper.True<D_UserMessage>();
 
             //筛选
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
-                    ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
             int count = await q.Where(where).CountAsync();
 
-            var list = await q.Where(where).OrderBy($@"{pageInput.SortField} {pageInput.SortType}")
-                .Skip((pageInput.PageIndex - 1) * pageInput.PageRows)
-                .Take(pageInput.PageRows)
+            var list = await q.Where(where).OrderBy($@"{input.SortField} {input.SortType}")
+                .Skip((input.PageIndex - 1) * input.PageRows)
+                .Take(input.PageRows)
                 .ToListAsync();
 
             return new PageResult<D_UserMessage> { Data = list, Total = count };
@@ -48,7 +48,7 @@ namespace Coldairarrow.Business.D_Manage
 
         public async Task<D_UserMessage> GetTheDataAsync(string id)
         {
-            return await GetEntityAsync(null, id);
+            return await GetEntityAsync(id);
         }
 
         public async Task AddDataAsync(D_UserMessage data)
@@ -66,155 +66,145 @@ namespace Coldairarrow.Business.D_Manage
             await DeleteAsync(ids);
         }
 
-        public async Task<List<D_UserMessageDTO>> GetHistoryDataDialogListAsync(string condition, string keyword, string creatorId, string creatorAvatar, string userId, string userAvatar, bool isGroup, DateTime? start = null, DateTime? end = null)
+        public async Task<List<D_UserMessage>> GetHistoryDataListAsync(PageInput<D_UserMessageInputDTO> input)
         {
-            //List<D_UserMessage> dataList = new List<D_UserMessage>();
-
-            //List<DateTime> times = TableTimeFormatHelper.GetAddTimeFormatEndingList(start, end, "yyyyMM");
-            //foreach (var time in times)
-            //{
-            //    string tableSuffix = time.ToString("yyyyMM");
-            //    var sqlexist = $"select count(1) from sys.objects where name = '{typeof(D_UserMessage).Name + tableSuffix}'";
-            //    var result = SqlQueryAsync(sqlexist, tableSuffix).Result;
-            //    if (!(result.Rows.Count == 1 && result.Rows[0].ItemArray.Length == 1 && result.Rows[0][0].ToString() == "1"))
-            //    {
-            //        continue;
-            //    }
-
-            //    Expression<Func<D_UserMessage, bool>> where = x =>
-            //     (x.Type == 2);
-
-            //    where = where.And(x =>
-            //        (x.CreatorId == creatorId && x.ReceiveId == userId) ||
-            //        (x.CreatorId == userId && x.ReceiveId == creatorId)
-            //    );
-
-            //    where = where.And(x => EF.Functions.DateDiffDay(start, x.CreateTime) >= 0 && EF.Functions.DateDiffDay(x.CreateTime, end) >= 0);
-
-            //    dataList.AddRange(await GetAllListWhereAsync(where, tableSuffix));
-
-            //}
 
             Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
 
             //筛选
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
-                    ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
 
-            if (isGroup == false)
+            if (input.Search.isGroup == false)
             {
                 where = where.And(x => string.IsNullOrEmpty(x.GroupId) &&
-                    ((x.CreatorId == creatorId && x.UserIds.Contains("^" + userId + "^")) ||
-                    (x.CreatorId == userId && x.UserIds.Contains("^" + creatorId + "^")))
+                    ((x.CreatorId == input.Search.creatorId && x.UserIds.Contains("^" + input.Search.userId + "^")) ||
+                    (x.CreatorId == input.Search.userId && x.UserIds.Contains("^" + input.Search.creatorId + "^")))
                 );
             }
             else
             {
                 where = where.And(x =>
-                  x.GroupId == userId);
+                  x.GroupId == input.Search.userId);
             }
 
-            List<D_UserMessage> dataList = await GetHistoryDataList(where, start, end, "CreateTime");
+            List<D_UserMessage> dataList = await GetHistoryDataList(where, input.Search.start, input.Search.end, "CreateTime");
 
-            var dataListDto = dataList.OrderBy(p => p.CreateTime).Select(p => _mapper.Map<D_UserMessageDTO>(p)).ToList();
-
-            return dataListDto;
+            return dataList;
         }
 
-        //public async Task<PageResult<D_UserMessageDTO>> GetHistoryDataListAsync(PageInput<D_UserMessageInputDTO> pagination, string condition, string keyword, string creatorId, string userId, bool markflag, bool? isGroup, DateTime? start=null, DateTime? end = null)
-        //{
-        //    Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
+        public async Task<PageResult<D_UserMessage>> GetPageHistoryDataListAsync(PageInput<D_UserMessageInputDTO> input)
+        {
+            Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
 
-        //    //筛选
-        //    if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
-        //    {
-        //        var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
-        //            ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
-        //        where = where.And(newWhere);
-        //    }
+            //筛选
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
+            {
+                var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
+                where = where.And(newWhere);
+            }
 
-        //    if (isGroup == null)
-        //    {
-        //        if (!string.IsNullOrEmpty(creatorId))
-        //        {
-        //            where = where.And(x => x.CreatorId == creatorId || x.GroupId == creatorId);
-        //        }
-        //    }
-        //    else if (isGroup == false)
-        //    {
-        //        if (!string.IsNullOrEmpty(creatorId))
-        //        {
-        //            where = where.And(x => string.IsNullOrEmpty(x.GroupId) && x.CreatorId == creatorId);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (!string.IsNullOrEmpty(creatorId))
-        //        {
-        //            where = where.And(x => x.GroupId == creatorId);
-        //        }
-        //    }
+            if (input.Search.isGroup == null)
+            {
+                if (!string.IsNullOrEmpty(input.Search.creatorId))
+                {
+                    where = where.And(x => x.CreatorId == input.Search.creatorId || x.GroupId == input.Search.creatorId);
+                }
+            }
+            else if (input.Search.isGroup == false)
+            {
+                if (!string.IsNullOrEmpty(input.Search.creatorId))
+                {
+                    where = where.And(x => string.IsNullOrEmpty(x.GroupId) && x.CreatorId == input.Search.creatorId);
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(input.Search.creatorId))
+                {
+                    where = where.And(x => x.GroupId == input.Search.creatorId);
+                }
+            }
 
-        //    if (!string.IsNullOrEmpty(userId))
-        //    {
-        //        if (creatorId != userId)
-        //        {
-        //            where = where.And(x => x.CreatorId == userId || x.UserIds.Contains("^" + userId + "^"));
-        //            if (markflag == true)
-        //            {
-        //                where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + userId + "^"));
-        //            }
-        //        }
-        //        else
-        //        {
-        //            where = where.And(x => x.UserIds.Contains("^" + userId + "^"));
-        //            if (markflag == true)
-        //            {
-        //                where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + userId + "^"));
-        //            }
-        //        }
-        //    }
+            if (!string.IsNullOrEmpty(input.Search.userId))
+            {
+                if (input.Search.creatorId != input.Search.userId)
+                {
+                    where = where.And(x => x.CreatorId == input.Search.userId || x.UserIds.Contains("^" + input.Search.userId + "^"));
+                    if (input.Search.markflag == true)
+                    {
+                        where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
+                    }
+                }
+                else
+                {
+                    where = where.And(x => x.UserIds.Contains("^" + input.Search.userId + "^"));
+                    if (input.Search.markflag == true)
+                    {
+                        where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
+                    }
+                }
+            }
 
-        //    List<D_UserMessage> dataList = await GetHistoryDataList(pagination, where, start, end, "CreateTime");
+           var dataList = await GetPageHistoryDataList(input, where, input.Search.start, input.Search.end, "CreateTime");
 
-        //    var dataListDto = dataList.Select(p => Mapper.Map<D_UserMessageDTO>(p)).ToList();
+            return dataList;
+        }
 
-        //    return dataListDto;
-        //}
+        public async Task<List<GroupData>> GetHistoryGroupDataListAsync(PageInput<D_UserMessageInputDTO> input)
+        {
+            Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
 
-        //public async Task<List<GroupData>> GetHistoryGroupDataListAsync(string condition, string keyword, string creatorId, string userId, bool markflag, DateTime? start = null, DateTime? end = null)
-        //{
-        //    Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
+            //筛选
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
+            {
+                var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
+                where = where.And(newWhere);
+            }
 
-        //    //筛选
-        //    if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
-        //    {
-        //        var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
-        //            ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
-        //        where = where.And(newWhere);
-        //    }
+            if (!string.IsNullOrEmpty(input.Search.creatorId))
+            {
+                where = where.And(x => x.CreatorId == input.Search.creatorId || x.GroupId == input.Search.creatorId);
+            }
+            if (!string.IsNullOrEmpty(input.Search.userId))
+            {
+                where = where.And(x => x.UserIds.Contains("^" + input.Search.userId + "^"));
+                if (input.Search.markflag == true)
+                {
+                    where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
+                }
+            }
 
-        //    if (!string.IsNullOrEmpty(creatorId))
-        //    {
-        //        where = where.And(x => x.CreatorId == creatorId || x.GroupId == creatorId);
-        //    }
-        //    if (!string.IsNullOrEmpty(userId))
-        //    {
-        //        where = where.And(x => x.UserIds.Contains("^" + userId + "^"));
-        //        if (markflag == true)
-        //        {
-        //            where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + userId + "^"));
-        //        }
-        //    }
+            if (input.Search.end == DateTime.MinValue || input.Search.end == null)
+            {
+                input.Search.end = DateTime.Now;
+            }
+            if (input.Search.start == DateTime.MinValue || input.Search.start == null)
+            {
+                input.Search.start = DateTime.Now.AddDays(-30);
+            }
 
-        //    List<GroupData> dataList = await GetHistoryGroupDataList(where, start, end, "CreateTime");
+            var newWhere2 = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                  ParsingConfig.Default, false, $@"CreateTime > @0 && CreateTime < @1", new object[] { input.Search.start, input.Search.end });
+            where = where.And(newWhere2);
 
-        //    return dataList;
-        //}
+            var dataList = (await GetIQueryable().Where(where).ToListAsync()).GroupBy(c => c.CreatorId, (k, g) => new GroupData()
+            {
+                Total = g.Count(),
+                CreatorId = k,
+                D_UserMessage = g.Last(),
+            }).ToList();
+
+            return dataList;
+        }
+
+
         #endregion
 
         #region 私有成员

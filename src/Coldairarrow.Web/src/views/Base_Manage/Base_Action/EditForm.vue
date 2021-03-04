@@ -63,7 +63,7 @@ export default {
   components: {
     PermissionList
   },
-  data() {
+  data () {
     return {
       layout: {
         labelCol: { span: 5 },
@@ -81,7 +81,7 @@ export default {
     }
   },
   methods: {
-    init(id) {
+    init (id) {
       this.visible = true
       this.entity = {}
       this.$nextTick(() => {
@@ -95,7 +95,7 @@ export default {
         }
       })
     },
-    openForm(id) {
+    openForm (id) {
       this.init(id)
 
       if (id) {
@@ -104,7 +104,7 @@ export default {
         })
       }
     },
-    handleSubmit() {
+    handleSubmit () {
       this.$refs['form'].validate(valid => {
         if (!valid) {
           return

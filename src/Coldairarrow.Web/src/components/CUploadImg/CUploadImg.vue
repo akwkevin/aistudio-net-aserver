@@ -27,14 +27,15 @@ const uuid = require('uuid')
 
 export default {
   props: {
-    value: '', //字符串或字符串数组
+    // eslint-disable-next-line vue/require-prop-type-constructor
+    value: '', // 字符串或字符串数组
     maxCount: {
       type: Number,
       default: 1
     }
   },
-  mounted() {
-    if (this.maxCount == 1) {
+  mounted () {
+    if (this.maxCount === 1) {
       this.value = this.value || ''
     } else {
       this.value = this.value || []
@@ -43,19 +44,19 @@ export default {
 
     this.refresh()
   },
-  data() {
+  data () {
     return {
       previewVisible: false,
       previewImage: '',
       fileList: [],
       internelValue: {},
-      headers: { Authorization: 'Bearer ' + TokenCache.getToken() },
+      headers: { Authorization: 'Bearer ' + TokenCache.getToken() }
     }
   },
   watch: {
-    value(val) {
-      //内部触发事件不处理,仅回传数据
-      if (val == this.internelValue) {
+    value (val) {
+      // 内部触发事件不处理,仅回传数据
+      if (val === this.internelValue) {
         return
       }
 
@@ -66,23 +67,23 @@ export default {
     }
   },
   methods: {
-    multiple() {
+    multiple () {
       return this.maxCount > 1
     },
-    checkType(val) {
-      if (this.maxCount == 1 && TypeHelper.isArray(val)) {
+    checkType (val) {
+      if (this.maxCount === 1 && TypeHelper.isArray(val)) {
         throw 'maxCount=1时model不能为Array'
       }
       if (this.maxCount > 1 && !TypeHelper.isArray(val)) {
         throw 'maxCount>1时model必须为Array<String>'
       }
     },
-    refresh() {
+    refresh () {
       if (this.maxCount < 1) {
         throw 'maxCount必须>=1'
       }
       if (this.value) {
-        let urls = []
+        const urls = []
         if (TypeHelper.isString(this.value)) {
           urls.push(this.value)
         } else if (TypeHelper.isArray(this.value)) {
@@ -96,21 +97,21 @@ export default {
         })
       }
     },
-    handleCancel() {
+    handleCancel () {
       this.previewVisible = false
     },
-    handlePreview(file) {
+    handlePreview (file) {
       this.previewImage = file.url || file.thumbUrl
       this.previewVisible = true
     },
-    handleChange({ file, fileList }) {
+    handleChange ({ file, fileList }) {
       this.fileList = fileList
 
-      if (file.status == 'done' || file.status == 'removed') {
-        var urls = this.fileList.filter(x => x.status == 'done').map(x => x.url || x.response.url)
-        var newValue = this.maxCount == 1 ? urls[0] : urls
+      if (file.status === 'done' || file.status === 'removed') {
+        var urls = this.fileList.filter(x => x.status === 'done').map(x => x.url || x.response.url)
+        var newValue = this.maxCount === 1 ? urls[0] : urls
         this.internelValue = newValue
-        //双向绑定
+        // 双向绑定
         this.$emit('input', newValue)
       }
     }

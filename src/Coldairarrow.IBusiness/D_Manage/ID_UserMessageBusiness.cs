@@ -10,19 +10,32 @@ namespace Coldairarrow.Business.D_Manage
 {
     public interface ID_UserMessageBusiness : IShardingBaseBusiness<D_UserMessage>
     {
-        Task<PageResult<D_UserMessage>> GetDataListAsync(PageInput<D_UserMessageInputDTO> pagination, string condition, string keyword);
+        Task<PageResult<D_UserMessage>> GetDataListAsync(PageInput<D_UserMessageInputDTO> input);
         Task<D_UserMessage> GetTheDataAsync(string id);
         Task AddDataAsync(D_UserMessage data);
         Task UpdateDataAsync(D_UserMessage data);
         Task DeleteDataAsync(List<string> ids);
-        //Task<List<D_UserMessageDTO>> GetHistoryDataDialogListAsync(string condition, string keyword, string creatorId, string creatorAvatar, string userId, string userAvatar, bool isGroup, DateTime? start = null, DateTime? end = null);
-        //Task<PageResult<D_UserMessageDTO>> GetHistoryDataListAsync(PageInput<D_UserMessageInputDTO> pagination, string condition, string keyword, string creatorId, string userId, bool markflag, bool? isGroup, DateTime? start = null, DateTime? end = null);
-        //Task<List<GroupData>> GetHistoryGroupDataListAsync(string condition, string keyword, string creatorId, string userId, bool markflag, DateTime? start = null, DateTime? end = null);
+        #region 历史数据
+        Task<List<D_UserMessage>> GetHistoryDataListAsync(PageInput<D_UserMessageInputDTO> input);
+        Task<PageResult<D_UserMessage>> GetPageHistoryDataListAsync(PageInput<D_UserMessageInputDTO> input);
+        Task<List<GroupData>> GetHistoryGroupDataListAsync(PageInput<D_UserMessageInputDTO> input);
+        #endregion
     }
 
     public class D_UserMessageInputDTO
     {
+
+        public string condition { get; set; }
         public string keyword { get; set; }
+        public string creatorId { get; set; }
+        public string userId { get; set; }
+
+        public bool? isGroup { get; set; }
+
+        public DateTime? start { get; set; }
+        public DateTime? end { get; set; }
+
+        public bool markflag { get; set; }
     }
 
 

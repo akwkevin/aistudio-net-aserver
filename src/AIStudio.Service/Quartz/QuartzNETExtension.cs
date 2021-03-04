@@ -126,7 +126,6 @@ namespace AIStudio.Service.Quartz
                 {
                     FileQuartz.SaveJob(new List<Quartz_TaskDTO> { taskOptions });
                     _taskList.Add(taskOptions);
-
                 }
 
                 var type = GlobalJob.Instance.AllTypes.FirstOrDefault(p => p.Name == taskOptions.ApiUrl);
@@ -159,7 +158,7 @@ namespace AIStudio.Service.Quartz
                 }
                 else
                 {
-                    await schedulerFactory.Pause(taskOptions);
+                    var task = await schedulerFactory.Pause(taskOptions);
                     FileQuartz.WriteLog($"作业:{taskOptions.TaskName},分组:{taskOptions.GroupName},新建时未启动原因,状态为:{taskOptions.Status}");
                 }
                 if (!init)

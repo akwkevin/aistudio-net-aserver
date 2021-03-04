@@ -8,7 +8,7 @@ namespace Coldairarrow.Business.OA_Manage
 {
     public interface IOA_DefTypeBusiness : IBaseBusiness<OA_DefType>
     {
-        Task<PageResult<OA_DefType>> GetDataListAsync(PageInput<OA_DefTypeInputDTO> pagination, string condition, string keyword);
+        Task<PageResult<OA_DefType>> GetDataListAsync(PageInput<OA_DefTypeInputDTO> pagination);
         Task<OA_DefType> GetTheDataAsync(string id);
         Task AddDataAsync(OA_DefType data);
         Task UpdateDataAsync(OA_DefType data);
@@ -19,6 +19,8 @@ namespace Coldairarrow.Business.OA_Manage
     public class OA_DefTypeInputDTO
     {
         public string keyword { get; set; }
+
+        public string condition { get; set; }
     }
 
     public class OA_DefTypeDTO : TreeModel

@@ -42,7 +42,7 @@ namespace Coldairarrow.Business.Quartz_Manage
 
         public async Task<Quartz_Task> GetTheDataAsync(string id)
         {
-            return await GetEntityAsync(null,id);
+            return await GetEntityAsync(id);
         }
 
         public async Task AddDataAsync(Quartz_Task data)

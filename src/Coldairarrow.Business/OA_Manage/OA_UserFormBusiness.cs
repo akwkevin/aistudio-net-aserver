@@ -56,42 +56,41 @@ namespace Coldairarrow.Business.OA_Manage
 
         #region 外部接口
 
-        public async Task<PageResult<OA_UserFormDTO>> GetDataListAsync(PageInput<OA_UserFormInputDTO> pagination, string condition, string keyword,
-           string userId, string applicantUserId, string creatorId, string alreadyUserIds)
+        public async Task<PageResult<OA_UserFormDTO>> GetDataListAsync(PageInput<OA_UserFormInputDTO> input)
         {
             var q = GetIQueryable();
             var where = LinqHelper.True<OA_UserForm>();
 
             //筛选
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<OA_UserForm, bool>(
-                    ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
 
-            if (!userId.IsNullOrEmpty())
+            if (!input.Search.userId.IsNullOrEmpty())
             {
-                where = where.And(p => p.UserIds.Contains("^" + userId + "^") && p.Status == (int)OAStatus.Being);
+                where = where.And(p => p.UserIds.Contains("^" + input.Search.userId + "^") && p.Status == (int)OAStatus.Being);
             }
 
-            if (!applicantUserId.IsNullOrEmpty())
+            if (!input.Search.applicantUserId.IsNullOrEmpty())
             {
-                where = where.And(p => p.ApplicantUserId == applicantUserId && p.Status == (int)OAStatus.Being);
+                where = where.And(p => p.ApplicantUserId == input.Search.applicantUserId && p.Status == (int)OAStatus.Being);
             }
 
-            if (!alreadyUserIds.IsNullOrEmpty())
+            if (!input.Search.alreadyUserIds.IsNullOrEmpty())
             {
-                where = where.And(p => p.AlreadyUserIds.Contains("^" + alreadyUserIds + "^"));
+                where = where.And(p => p.AlreadyUserIds.Contains("^" + input.Search.alreadyUserIds + "^"));
             }
 
-            if (!creatorId.IsNullOrEmpty())
+            if (!input.Search.creatorId.IsNullOrEmpty())
             {
-                where = where.And(p => p.CreatorId == creatorId);
+                where = where.And(p => p.CreatorId == input.Search.creatorId);
             }
 
 
-            return await q.Where(where).ProjectTo<OA_UserFormDTO>(_mapper.ConfigurationProvider).GetPageResultAsync(pagination);
+            return await q.Where(where).ProjectTo<OA_UserFormDTO>(_mapper.ConfigurationProvider).GetPageResultAsync(input);
         }
 
     
@@ -117,7 +116,7 @@ namespace Coldairarrow.Business.OA_Manage
 
         public async Task<OA_UserFormDTO> GetTheDataAsync(string id)
         {
-            //return Mapper.Map<OA_UserFormDTO>(await GetEntityAsync(null, id));
+            //return Mapper.Map<OA_UserFormDTO>(await GetEntityAsync(id));
             var form = await (from a in Db.GetIQueryable<OA_UserForm>()
                               join b in Db.GetIQueryable<OA_UserFormStep>() on a.Id equals b.UserFormId into j1
                               where a.Id.Equals(id)
@@ -156,11 +155,46 @@ namespace Coldairarrow.Business.OA_Manage
 
         #endregion
 
-        #region 私有成员
 
-        #endregion
+        #region 历史数据查询
+        public async Task<PageResult<OA_UserForm>> GetPageHistoryDataList(PageInput<OA_UserFormInputDTO> input)
+        {   
+            var where = LinqHelper.True<OA_UserForm>();
 
-        #region 数据模型
+            //筛选
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
+            {
+                var newWhere = DynamicExpressionParser.ParseLambda<OA_UserForm, bool>(
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
+                where = where.And(newWhere);
+            }
+
+            if (!input.Search.userId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.UserIds.Contains("^" + input.Search.userId + "^") && p.Status == (int)OAStatus.Being);
+            }
+
+            if (!input.Search.applicantUserId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.ApplicantUserId == input.Search.applicantUserId && p.Status == (int)OAStatus.Being);
+            }
+
+            if (!input.Search.alreadyUserIds.IsNullOrEmpty())
+            {
+                where = where.And(p => p.AlreadyUserIds.Contains("^" + input.Search.alreadyUserIds + "^"));
+            }
+
+            if (!input.Search.creatorId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.CreatorId == input.Search.creatorId);
+            }
+
+            var dataList = await GetPageHistoryDataList(input, where, input.Search.start, input.Search.end, "CreateTime");
+
+            return dataList;
+
+
+        }
 
         #endregion
     }

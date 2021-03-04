@@ -22,25 +22,25 @@ namespace Coldairarrow.Business.D_Manage
 
         #region 外部接口
 
-        public async Task<PageResult<D_UserGroup>> GetDataListAsync(PageInput<D_UserGroupInputDTO> pagination, string condition, string keyword)
+        public async Task<PageResult<D_UserGroup>> GetDataListAsync(PageInput<D_UserGroupInputDTO> input)
         {
             var q = GetIQueryable();
             var where = LinqHelper.True<D_UserGroup>();
 
             //筛选
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserGroup, bool>(
-                    ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
 
-            return await q.Where(where).GetPageResultAsync(pagination);
+            return await q.Where(where).GetPageResultAsync(input);
         }
 
         public async Task<D_UserGroup> GetTheDataAsync(string id)
         {
-            return await GetEntityAsync(null, id);
+            return await GetEntityAsync(id);
         }
 
         public async Task AddDataAsync(D_UserGroup data)

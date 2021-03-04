@@ -33,7 +33,7 @@ namespace Coldairarrow.Business.Base_Manage
             _mapper = mapper;
         }
         IBase_UserCache _userCache { get; }
-        protected override string _textField => "RealName";
+        protected override string _textField => "UserName";
 
         #region 外部接口
 
@@ -106,7 +106,7 @@ namespace Coldairarrow.Business.Base_Manage
             }
         }
 
-        [DataAddLog(UserLogType.系统用户管理, "RealName", "用户")]
+        [DataAddLog(UserLogType.系统用户管理, "UserName", "用户")]
         [DataRepeatValidate(
             new string[] { "UserName" },
             new string[] { "用户名" })]
@@ -117,7 +117,7 @@ namespace Coldairarrow.Business.Base_Manage
             await SetUserRoleAsync(input.Id, input.RoleIdList);
         }
 
-        [DataEditLog(UserLogType.系统用户管理, "RealName", "用户")]
+        [DataEditLog(UserLogType.系统用户管理, "UserName", "用户")]
         [DataRepeatValidate(
             new string[] { "UserName" },
             new string[] { "用户名" })]
@@ -132,7 +132,7 @@ namespace Coldairarrow.Business.Base_Manage
             await _userCache.UpdateCacheAsync(input.Id);
         }
 
-        [DataDeleteLog(UserLogType.系统用户管理, "RealName", "用户")]
+        [DataDeleteLog(UserLogType.系统用户管理, "UserName", "用户")]
         [Transactional]
         public async Task DeleteDataAsync(List<string> ids)
         {
@@ -163,5 +163,15 @@ namespace Coldairarrow.Business.Base_Manage
         }
 
         #endregion
+
+        public async Task<string> GetAvatar(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return null;
+
+            var user = await GetEntityAsync(userId);
+
+            return user?.Avatar;
+        }
     }
 }

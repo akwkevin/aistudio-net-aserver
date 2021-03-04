@@ -1,4 +1,5 @@
 ﻿using AIStudio.Service.WebSocketEx;
+using AutoMapper;
 using Coldairarrow.Business.Base_Manage;
 using Coldairarrow.Business.D_Manage;
 using Coldairarrow.Entity;
@@ -19,13 +20,14 @@ namespace Coldairarrow.Api.Controllers.D_Manage
     {
         #region DI
 
-        public D_UserMessageController(ID_UserMessageBusiness t_UserMessageBus, IBase_UserBusiness userBus, ID_UserGroupBusiness d_UserGroupBusiness, ICustomWebSocketFactory wsFactory, IOperator ioperator)
+        public D_UserMessageController(ID_UserMessageBusiness t_UserMessageBus, IBase_UserBusiness userBus, ID_UserGroupBusiness d_UserGroupBusiness, ICustomWebSocketFactory wsFactory, IOperator ioperator, IMapper mapper)
         {
             _t_UserMessageBus = t_UserMessageBus;
             _wsFactory = wsFactory;
             _userBus = userBus;
             _d_UserGroupBusiness = d_UserGroupBusiness;
             _operator = ioperator;
+            _mapper = mapper;
         }
 
         ICustomWebSocketFactory _wsFactory { get; }
@@ -33,138 +35,129 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         IBase_UserBusiness _userBus { get; }
         ID_UserGroupBusiness _d_UserGroupBusiness { get; }
         IOperator _operator { get; }
+        IMapper _mapper { get; }
         #endregion
 
-        //#region 获取 
-        ///// <summary>
-        ///// 获取列表
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //public async Task<List<D_OnlineUserDTO>> GetDataList()
-        //{
-        //    var alluser = await _userBus.GetAllOnlineDataList();
-        //    var smallAssistant = _wsFactory.GetSmallAssistant();
-        //    alluser.Add(new D_OnlineUserDTO(smallAssistant.UserId, smallAssistant.UserName, smallAssistant.Avatar));
-        //    var allonline = _wsFactory.AllWithAssistant();
+        #region 获取 
+        /// <summary>
+        /// 获取列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<List<D_OnlineUserDTO>> GetUserList()
+        {
+            var alluser = (await _userBus.GetListAsync()).Select(p => new D_OnlineUserDTO(p.Id, p.UserName, p.Avatar)).ToList(); ;
+            var smallAssistant = _wsFactory.GetSmallAssistant();
+            alluser.Add(new D_OnlineUserDTO(smallAssistant.UserId, smallAssistant.UserName, smallAssistant.Avatar));
+            var allonline = _wsFactory.AllWithAssistant();
 
-        //    alluser.ForEach(p => { if (allonline.Any(q => q.UserId == p.UserId)){ p.Online = true; } });
+            alluser.ForEach(p => { if (allonline.Any(q => q.UserId == p.UserId)) { p.Online = true; } });
 
-        //    var allgroup = (await _d_UserGroupBusiness.GetAllListWhereAsync(p => p.UserIds.Contains(_operator.UserId) || p.CreatorId == _operator.UserId))
-        //        .Select(p => 
-        //        new D_OnlineUserDTO(
-        //            p.Id,
-        //        p.Name,
-        //        p.Avatar,
-        //        true, 
-        //        (string.IsNullOrEmpty(p.UserIds)?"^": p.UserIds) + p.CreatorId + "^",
-        //        (string.IsNullOrEmpty(p.UserNames) ? "^" : p.UserNames) + p.CreatorName + "^"
-        //        ));
+            var allgroup = (await _d_UserGroupBusiness.GetIQueryable().Where(p => p.UserIds.Contains(_operator.UserId) || p.CreatorId == _operator.UserId).ToListAsync())
+                .Select(p =>
+                new D_OnlineUserDTO(
+                    p.Id,
+                p.Name,
+                p.Avatar,
+                true,
+                (string.IsNullOrEmpty(p.UserIds) ? "^" : p.UserIds) + p.CreatorId + "^",
+                (string.IsNullOrEmpty(p.UserNames) ? "^" : p.UserNames) + p.CreatorName + "^"
+                ));
 
-        //    alluser.AddRange(allgroup);
+            alluser.AddRange(allgroup);
 
-        //    return alluser;
-        //}
+            return alluser;
+        }
 
-        ///// <summary>
-        ///// 获取列表
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //public async Task<List<D_UserMessageDTO>> GetHistoryDataDialogList(string condition, string keyword, string creatorId, string creatorAvatar, string userId, string userAvatar,bool isGroup, DateTime? start, DateTime? end)
-        //{   
-        //    var dataList = await _t_UserMessageBus.GetHistoryDataDialogListAsync(condition, keyword, creatorId, creatorAvatar, userId, userAvatar, isGroup, start, end);
+        /// <summary>
+        /// 获取列表，按时间获取
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<List<D_UserMessageDTO>> GetHistoryDataList(PageInput<D_UserMessageInputDTO> input)
+        {
+            var dataList = _mapper.Map<List<D_UserMessageDTO>>(await _t_UserMessageBus.GetHistoryDataListAsync(input));
 
-        //    for (int i = 0; i < dataList.Count; i++)
-        //    {
-        //        var p = dataList[i];
-        //        p.Avatar = p.CreatorId == _wsFactory.GetSmallAssistant().UserId ? _wsFactory.GetSmallAssistant().Avatar : await _userBus.GetAvatar(p.CreatorId); 
-        //        p.Role = _operator?.UserId == p.CreatorId ? "Sender" : "Receiver";
-        //        if (i == 0 || (p.CreateTime - dataList[i - 1].CreateTime).TotalSeconds > 60)
-        //        {
-        //            p.ShowTime = true;
-        //        }
-        //    }
-        //    return dataList;
-        //}
+            for (int i = 0; i < dataList.Count; i++)
+            {
+                var p = dataList[i];
+                p.Avatar = p.CreatorId == _wsFactory.GetSmallAssistant().UserId ? _wsFactory.GetSmallAssistant().Avatar : await _userBus.GetAvatar(p.CreatorId);
+                p.Role = _operator?.UserId == p.CreatorId ? "Sender" : "Receiver";
+                if (i == 0 || (p.CreateTime - dataList[i - 1].CreateTime).TotalSeconds > 60)
+                {
+                    p.ShowTime = true;
+                }
+            }
+            return dataList;
+        }
 
-        /////// <summary>
-        /////// 获取列表,分页
-        /////// </summary>
-        /////// <returns></returns>
-        ////[HttpPost]
-        ////public async Task<PageResult<D_UserMessageDTO>> GetHistoryDataList(PageInput<D_UserMessageInputDTO> pagination, string condition, string keyword, string creatorId, string userId, bool markflag, bool? isGroup, DateTime? start, DateTime? end)
-        ////{
-            
-        ////    var dataList = await _t_UserMessageBus.GetHistoryDataListAsync(pagination, condition, keyword, creatorId, userId, markflag, isGroup, start, end);
-        ////    var smallAssistant = _wsFactory.GetSmallAssistant();
+        /// <summary>
+        /// 获取列表,分页，按未读标记,上下滑动的时候使用
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<PageResult<D_UserMessageDTO>> GetPageHistoryDataList(PageInput<D_UserMessageInputDTO> input)
+        {
+            var result = await _t_UserMessageBus.GetPageHistoryDataListAsync(input);
 
-        ////    userId = _operator?.UserId;
-        ////    List<D_UserMessage> updataList = new List<D_UserMessage>();
-        ////    for (int i = 0; i < dataList.Count; i++)
-        ////    {
-        ////        var p = dataList[i];
-        ////        p.Avatar = p.CreatorId == _wsFactory.GetSmallAssistant().UserId ? _wsFactory.GetSmallAssistant().Avatar : await _userBus.GetAvatar(p.CreatorId);
-        ////        p.Role = _operator?.UserId == p.CreatorId ? "Sender" : "Receiver";
-        ////        if (i == 0 || (p.CreateTime - dataList[i - 1].CreateTime).TotalSeconds > 60)
-        ////        {
-        ////            p.ShowTime = true;
-        ////        }
-        ////        if (!string.IsNullOrEmpty(creatorId) && !string.IsNullOrEmpty(userId) && p.UserIds.Contains(userId) && !(p.ReadingMarks ?? "").Contains(userId))
-        ////        {
-        ////            p.ReadingMarks = (string.IsNullOrEmpty(p.ReadingMarks) ? "^" : p.ReadingMarks) + userId + "^";
-        ////            p.UpdateEntity();
-        ////            updataList.Add(_t_UserMessageBus.MapperBack(p));                   
-        ////        }
-        ////    }
+            var dataList = _mapper.Map<List<D_UserMessageDTO>>(result.Data);
+            var smallAssistant = _wsFactory.GetSmallAssistant();
 
-        ////    if (updataList.Count > 0)
-        ////    {
-        ////        foreach (var submessages in updataList.GroupBy(p => p.CreateTime.ToString("yyyyMM")))
-        ////        {
-        ////            List<TableMapperRule> rules = new List<TableMapperRule>()
-        ////            {
-        ////                new TableMapperRule()
-        ////                {
-        ////                    MappingType = typeof(D_UserMessage),
-        ////                    TableName = typeof(D_UserMessage).Name + submessages.Key,
-        ////                }
-        ////            };
-        ////            await _t_UserMessageBus.GetNewFullService(null, null, rules, true).UpdateAsync(submessages.ToList());
-        ////        }
-        ////    }
+            var userId = _operator?.UserId;
+            List<D_UserMessage> updataList = new List<D_UserMessage>();
+            for (int i = 0; i < dataList.Count; i++)
+            {
+                var p = dataList[i];
+                p.Avatar = p.CreatorId == _wsFactory.GetSmallAssistant().UserId ? _wsFactory.GetSmallAssistant().Avatar : await _userBus.GetAvatar(p.CreatorId);
+                p.Role = _operator?.UserId == p.CreatorId ? "Sender" : "Receiver";
+                if (i == 0 || (p.CreateTime - dataList[i - 1].CreateTime).TotalSeconds > 60)
+                {
+                    p.ShowTime = true;
+                }
+                if (!string.IsNullOrEmpty(userId) && p.UserIds.Contains(userId) && !(p.ReadingMarks ?? "").Contains(userId))
+                {
+                    p.ReadingMarks = (string.IsNullOrEmpty(p.ReadingMarks) ? "^" : p.ReadingMarks) + userId + "^";
+                    UpdateEntity(p);
+                    updataList.Add(p);
+                }
+            }
 
-        ////    return dataList;
-        ////}
-        //#endregion
+            if (updataList.Count > 0)
+            {
+                await _t_UserMessageBus.UpdateAsync(updataList);
+            }
+
+            return new PageResult<D_UserMessageDTO>() { Total = result.Total, Data = dataList };
+        }
+        #endregion
 
         #region
         #endregion
 
-        ///// <summary>
-        ///// 获取列表,分组
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //public async Task<List<GroupData>> GetHistoryGroupDataList(string condition, string keyword, string creatorId, string userId, bool markflag, DateTime? start = null, DateTime? end = null)
-        //{
-        //    var dataList = await _t_UserMessageBus.GetHistoryGroupDataListAsync(condition, keyword, creatorId, userId, markflag, start, end);
-        //    dataList.ForEach(async p =>
-        //    {
-        //        p.Avatar = p.CreatorId == _wsFactory.GetSmallAssistant().UserId ? _wsFactory.GetSmallAssistant().Avatar : await _userBus.GetAvatar(p.CreatorId);
-        //    });
-        //    return dataList;
-        //}
+        /// <summary>
+        /// 获取列表,分组，未读标记
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<List<GroupData>> GetHistoryGroupDataList(PageInput<D_UserMessageInputDTO> input)
+        {
+            var dataList = await _t_UserMessageBus.GetHistoryGroupDataListAsync(input);
+            dataList.ForEach(async p =>
+            {
+                p.Avatar = p.CreatorId == _wsFactory.GetSmallAssistant().UserId ? _wsFactory.GetSmallAssistant().Avatar : await _userBus.GetAvatar(p.CreatorId);
+            });
+            return dataList;
+        }
         #region 提交
         /// <summary>
         /// 获取详情
         /// </summary>
-        /// <param name="id">Id</param>
+        /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<D_UserGroup> GetTheData(string id)
+        public async Task<D_UserGroup> GetTheData(IdInputDTO input)
         {
-            return await _d_UserGroupBusiness.GetTheDataAsync(id);
+            return await _d_UserGroupBusiness.GetTheDataAsync(input.id);
         }
 
         /// <summary>

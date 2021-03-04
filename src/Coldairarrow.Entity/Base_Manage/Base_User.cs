@@ -42,6 +42,12 @@ namespace Coldairarrow.Entity.Base_Manage
         /// 所属部门Id
         /// </summary>
         public String DepartmentId { get; set; }
+
+        [MaxLength(255)]
+        public string PhoneNumber { get; set; }
+
+        [MaxLength(500)]
+        public string Avatar { get; set; }
     }
 
     public enum Sex

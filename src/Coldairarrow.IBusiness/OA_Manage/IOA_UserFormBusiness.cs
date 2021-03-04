@@ -11,7 +11,7 @@ namespace Coldairarrow.Business.OA_Manage
     {
         Task QueueWork(string id);
         Task<string> DequeueWork(string id);
-        Task<PageResult<OA_UserFormDTO>> GetDataListAsync(PageInput<OA_UserFormInputDTO> pagination, string condition, string keyword, string userId, string applicantUserId, string creatorId, string alreadyUserIds);
+        Task<PageResult<OA_UserFormDTO>> GetDataListAsync(PageInput<OA_UserFormInputDTO> input);
         Task<OA_UserFormDTO> GetTheDataAsync(string id);
         int GetDataListCount(List<string> jsonids, OAStatus status);
 
@@ -19,13 +19,22 @@ namespace Coldairarrow.Business.OA_Manage
         Task UpdateDataAsync(OA_UserForm data);
         Task DeleteDataAsync(List<string> ids);
 
-
+        #region 历史数据查询
+        Task<PageResult<OA_UserForm>> GetPageHistoryDataList(PageInput<OA_UserFormInputDTO> input);
+        #endregion
 
     }
 
     public class OA_UserFormInputDTO
     {
         public string keyword { get; set; }
+        public string condition { get; set; }
+        public string userId { get; set; }
+        public string applicantUserId { get; set; }
+        public string creatorId { get; set; }
+        public string alreadyUserIds { get; set; }
+        public DateTime? start { get; set; }
+        public DateTime? end { get; set; }
     }
 
     [Map(typeof(OA_UserForm))]
@@ -54,7 +63,7 @@ namespace Coldairarrow.Business.OA_Manage
 
         public List<OA_UserFormStepDTO> Comments { get; set; }
 
-        //public List<OAStep> Steps { get; set; }
+        public List<OAStep> Steps { get; set; }
 
         public int CurrentStepIndex { get; set; }
         public string CurrentStepId { get; set; }

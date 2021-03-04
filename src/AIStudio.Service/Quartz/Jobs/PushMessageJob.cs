@@ -2,7 +2,9 @@
 using Coldairarrow.Business.D_Manage;
 using Coldairarrow.Business.OA_Manage;
 using Coldairarrow.Business.Quartz_Manage;
+using Coldairarrow.Util;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
@@ -50,49 +52,65 @@ namespace AIStudio.Service.Quartz
             StringBuilder stringBuilder = new StringBuilder();
 
             try
-            {       
-                //var clearcache = CacheHelper.Cache.DeQueenAll<string>("CachTypes").Distinct().ToArray();
+            {
+                IQuene quene = ServiceLocator.Instance.GetRequiredService<IQuene>();
 
-                //var pushMessage = CacheHelper.Cache.DeQueenAll<string>("PushMessageTypes").Distinct();
+                var clearcache = quene.DeQueenAll<string>("CachTypes").Distinct().ToArray();
 
-                //foreach (var customWebSocket in _wsFactory.All())
-                //{
-                //    if (!customWebSocket.IsFirstPushed || pushMessage.Contains(customWebSocket.UserId) || clearcache.Length > 0)
-                //    {
-                //        customWebSocket.IsFirstPushed = true;
+                var pushMessage = quene.DeQueenAll<string>("PushMessageTypes").Distinct().ToArray();
 
-                //        var groupdata = _userMessageBusiness.GetHistoryGroupDataListAsync(null, null, null, customWebSocket.UserId, true).Result;
+                foreach (var customWebSocket in _wsFactory.All())
+                {
+                    if (!customWebSocket.IsFirstPushed || pushMessage.Contains(customWebSocket.UserId) || clearcache.Length > 0)
+                    {
+                        customWebSocket.IsFirstPushed = true;
 
-                //        Pagination pagination2 = new Pagination() { PageRows = 0 };
-                //        _userMailBusiness.GetHistoryDataListAsync(pagination2, null, null, customWebSocket.UserId, null, false, true).Wait();
+                        var groupdata = _userMessageBusiness.GetHistoryGroupDataListAsync(new PageInput<D_UserMessageInputDTO>()
+                        {
+                            PageRows = 0,
+                            Search = new D_UserMessageInputDTO()
+                            {
+                                userId = customWebSocket.UserId,
+                                markflag = true,
+                            }
+                        }).Result;
 
-                //        Pagination pagination3 = new Pagination() { PageRows = 0 };
-                //        _userFormBusiness.GetHistoryDataListAsync(pagination3, null, null, customWebSocket.UserId, null, null, null).Wait();
-                //        //查询并发送给客户端
-                //        //stringBuilder.Append();
-                //        var send = new MessageResult()
-                //        {
-                //            Success = true,
-                //            Data = new 
-                //            {
-                //                Clearcache = clearcache,
-                //                //UserMessage = groupdata,
-                //                UserMessageCount = groupdata.Sum(p => p.Total),
-                //                UserMailCount = pagination2.Total,
-                //                UserFormCount = pagination3.Total,
-                //            },
-                //            MessageType = WSMessageType.PushType
-                //        };
-                //        byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send));
-                //        customWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None).Wait();
-                //    }
-                //}
+                       var result2 = _userMailBusiness.GetHistoryDataListAsync(new PageInput<D_UserMailInputDTO>()
+                       {
+                           PageRows = 0,
+                           Search = new D_UserMailInputDTO()
+                           {
+                               userId = customWebSocket.UserId,
+                               markflag = true,
+                           }
+                       }).Result;
 
-                //message = stringBuilder.ToString();
-                //if (string.IsNullOrEmpty(message))
-                //{
-                //    logLevel = LogLevel.Trace;
-                //}
+                        //var pagination3 = new Pagination() { PageRows = 0 };
+                        //_userFormBusiness.GetHistoryDataListAsync(pagination3, null, null, customWebSocket.UserId, null, null, null).Wait();
+                        //查询并发送给客户端
+                        //stringBuilder.Append();
+                        var send = new MessageResult()
+                        {
+                            Success = true,
+                            Data = new
+                            {
+                                Clearcache = clearcache,
+                                UserMessageCount = groupdata.Sum(p => p.Total),
+                                UserMailCount = result2.Total,
+                                //UserFormCount = pagination3.Total,
+                            },
+                            MessageType = WSMessageType.PushType
+                        };
+                        byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send));
+                        customWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None).Wait();
+                    }
+                }
+
+                message = stringBuilder.ToString();
+                if (string.IsNullOrEmpty(message))
+                {
+                    logLevel = LogLevel.Trace;
+                }
             }
             catch (Exception ex)
             {

@@ -9,8 +9,8 @@ namespace Coldairarrow.Business.D_Manage
 {
     public interface ID_UserMailBusiness : IBaseBusiness<D_UserMail>
     {
-        Task<PageResult<D_UserMail>> GetDataListAsync(PageInput<D_UserMailInputDTO> pagination, string condition, string keyword, string userId, string creatorId, bool draft);
-        Task<PageResult<D_UserMail>> GetHistoryDataListAsync(PageInput<D_UserMailInputDTO> pagination, string condition, string keyword, string userId, string creatorId, bool draft, bool markflag, DateTime? start = null, DateTime? end = null);
+        Task<PageResult<D_UserMail>> GetDataListAsync(PageInput<D_UserMailInputDTO> input);
+        Task<PageResult<D_UserMail>> GetHistoryDataListAsync(PageInput<D_UserMailInputDTO> input);
         Task<D_UserMail> GetTheDataAsync(string id);
         Task AddDataAsync(D_UserMail data);
         Task UpdateDataAsync(D_UserMail data);
@@ -20,7 +20,17 @@ namespace Coldairarrow.Business.D_Manage
 
     public class D_UserMailInputDTO
     {
+        public string condition { get; set; }
         public string keyword { get; set; }
+        public string creatorId { get; set; }
+        public string userId { get; set; }
+
+        public bool draft { get; set; }
+
+        public DateTime? start { get; set; }
+        public DateTime? end { get; set; }
+
+        public bool markflag { get; set; }
     }
 
     [Map(typeof(D_UserMail))]

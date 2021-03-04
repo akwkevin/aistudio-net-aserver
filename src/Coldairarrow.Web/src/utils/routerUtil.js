@@ -82,10 +82,10 @@ const generatorDynamicRouter = () => {
     // ajax
     getRouterByUser().then(res => {
       // console.log('菜单:', res)
-      let allRouters = []
+      const allRouters = []
 
-      //首页根路由
-      let rootRouter = {
+      // 首页根路由
+      const rootRouter = {
         // 路由地址 动态拼接生成如 /dashboard/workplace
         path: '/',
         redirect: defaultSettings.desktopPath,
@@ -137,14 +137,14 @@ const getRouterByUser = () => {
  */
 const generator = (routerMap, parent) => {
   return routerMap.map(item => {
-    let hasChildren = item.children && item.children.length > 0
+    const hasChildren = item.children && item.children.length > 0
     let component = {}
     if (hasChildren) {
       component = PageView
     } else if (item.path) {
       component = () => import(`@/views${item.path}`)
     }
-    let currentRouter = {
+    const currentRouter = {
       path: '',
       // 路由名称，建议唯一
       name: uuid.v4(),
@@ -154,10 +154,10 @@ const generator = (routerMap, parent) => {
       meta: { title: item.title, icon: item.icon || undefined }
     }
 
-    //有子菜单
+    // 有子菜单
     if (hasChildren) {
       currentRouter.path = `/${uuid.v4()}`
-    } else if (item.path) {//页面
+    } else if (item.path) { // 页面
       currentRouter.path = item.path
       currentRouter.path = currentRouter.path.replace('//', '/')
     }

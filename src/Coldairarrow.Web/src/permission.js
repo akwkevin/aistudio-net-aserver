@@ -3,9 +3,9 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { setDocumentTitle, domTitle } from '@/utils/domUtil'
 import TokenCache from '@/utils/cache/TokenCache'
-import OperatorCache from '@/utils/cache/OperatorCache'
 import { initRouter } from '@/utils/routerUtil'
 import defaultSettings from '@/config/defaultSettings'
+import store from './store'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -16,7 +16,7 @@ router.beforeEach((to, from, next) => {
   to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`))
   // 已授权
   if (TokenCache.getToken()) {
-    OperatorCache.init(() => {
+    store.dispatch('GetInfo').then(() => {
       if (to.path === '/Home/Login') {
         next({ path: '/' })
         NProgress.done()
@@ -24,7 +24,7 @@ router.beforeEach((to, from, next) => {
         initRouter(to, from, next).then(() => {
           const redirect = decodeURIComponent(from.query.redirect || to.path)
           // 桌面特殊处理
-          if (to.path == defaultSettings.desktopPath || to.path == '/404') {
+          if (to.path === defaultSettings.desktopPath || to.path === '/404') {
             next()
           } else {
             if (to.path === redirect) {

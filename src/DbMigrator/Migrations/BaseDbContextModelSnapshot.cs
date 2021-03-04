@@ -405,6 +405,10 @@ namespace DbMigrator.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasComment("自然主键");
 
+                    b.Property<string>("Avatar")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2")
                         .HasComment("出生日期");
@@ -448,6 +452,10 @@ namespace DbMigrator.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("密码");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("RealName")
                         .HasColumnType("nvarchar(max)")

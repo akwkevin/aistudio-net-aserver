@@ -64,7 +64,7 @@ export default {
   components: {
     CSelect
   },
-  data() {
+  data () {
     return {
       form: this.$form.createForm(this),
       labelCol: { xs: { span: 24 }, sm: { span: 7 } },
@@ -74,19 +74,19 @@ export default {
     }
   },
   methods: {
-    setValue() {
+    setValue () {
       this.entity = { UserList: ['Admin'] }
     },
-    handleSubmit() {
+    handleSubmit () {
       console.log('当前值:', this.entity)
       this.form.validateFields((errors, values) => {
-        //c-select组件若需要校验则必须手动校验
+        // c-select组件若需要校验则必须手动校验
         if (!this.entity.UserList || this.entity.UserList.length == 0) {
           this.$message.error('请选择用户')
           return
         }
         if (!errors) {
-          //校验成功
+          // 校验成功
           console.log('校验通过')
         }
       })

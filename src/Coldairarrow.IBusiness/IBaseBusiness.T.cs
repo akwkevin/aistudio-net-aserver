@@ -49,6 +49,12 @@ namespace Coldairarrow.IBusiness
         Task<int> InsertAsync(List<T> entities);
 
         /// <summary>
+        /// 添加多条数据
+        /// </summary>
+        /// <param name="entities">实体对象集合</param>
+        Task<int> InsertAsync(List<object> entities);
+
+        /// <summary>
         /// 批量添加数据,速度快
         /// </summary>
         /// <param name="entities"></param>
@@ -178,6 +184,12 @@ namespace Coldairarrow.IBusiness
         /// </summary>
         /// <param name="entities">数据列表</param>
         Task<int> UpdateAsync(List<T> entities);
+
+        /// <summary>
+        /// 更新多条数据
+        /// </summary>
+        /// <param name="entities">数据列表</param>
+        Task<int> UpdateAsync(List<object> entities);
 
         /// <summary>
         /// 指定条件更新

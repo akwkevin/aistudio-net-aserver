@@ -70,25 +70,25 @@ namespace Coldairarrow.Business.OA_Manage
 
 
 
-        public async Task<PageResult<OA_DefFormDTO>> GetDataListAsync(PageInput<OA_DefFormInputDTO> pagination, string condition, string keyword)
+        public async Task<PageResult<OA_DefFormDTO>> GetDataListAsync(PageInput<OA_DefFormInputDTO> input)
         {
             var q = GetIQueryable();
             var where = LinqHelper.True<OA_DefForm>();
 
             //筛选
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<OA_DefForm, bool>(
-                    ParsingConfig.Default, false, $@"{condition}.Contains(@0)", keyword);
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
 
-            return await q.Where(where).ProjectTo<OA_DefFormDTO>(_mapper.ConfigurationProvider).GetPageResultAsync(pagination);
+            return await q.Where(where).ProjectTo<OA_DefFormDTO>(_mapper.ConfigurationProvider).GetPageResultAsync(input);
         }
 
         public async Task<OA_DefFormDTO> GetTheDataAsync(string id)
         {
-            return _mapper.Map<OA_DefFormDTO>(await GetEntityAsync(null, id));
+            return _mapper.Map<OA_DefFormDTO>(await GetEntityAsync(id));
         }
 
         public async Task AddDataAsync(OA_DefForm data)
