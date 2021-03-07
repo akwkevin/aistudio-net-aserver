@@ -40,6 +40,12 @@ namespace Coldairarrow.Api.Controllers.Base_Manage
             return await _roleBus.GetTheDataAsync(input.id) ?? new Base_RoleInfoDTO();
         }
 
+        [HttpPost]
+        public async Task<List<SelectOption>> GetOptionList(OptionListInputDTO input)
+        {
+            return await _roleBus.GetOptionListAsync(input);
+        }
+
         #endregion
 
         #region 提交

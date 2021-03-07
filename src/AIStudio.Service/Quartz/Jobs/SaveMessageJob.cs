@@ -16,26 +16,25 @@ using System.Threading.Tasks;
 namespace AIStudio.Service.Quartz
 {
     public class SaveMessageJob : IJob
-    {       
+    {
+        IQuene _quene { get { return ServiceLocator.Instance.GetRequiredService<IQuene>(); } }
         public Task Execute(IJobExecutionContext context)
         {
             Quartz_TaskDTO taskOptions = context.GetTaskOptions();
             string message = "";
             AbstractTrigger trigger = (context as JobExecutionContextImpl).Trigger as AbstractTrigger;
             if (taskOptions == null)
-            {             
-                FileQuartz.WriteJobExecute(LogLevel.Warning, trigger.FullName , "未到找作业或可能被移除");
+            {
+                FileQuartz.WriteJobExecute(LogLevel.Warning, trigger.FullName, "未到找作业或可能被移除");
                 return Task.CompletedTask;
             }
-
-            IQuene quene= ServiceLocator.Instance.GetRequiredService<IQuene>();
 
             LogLevel logLevel = LogLevel.Information;
             try
             {
                 foreach (var type in GlobalData.BatchSaveTypes)
                 {
-                    var messages = quene.DeQueenAll(type);
+                    var messages = _quene.DeQueenAll(type);
                     var listtype = typeof(List<>).MakeGenericType(new Type[]
                     {
                         typeof(object)
@@ -60,14 +59,14 @@ namespace AIStudio.Service.Quartz
                             MethodInfo updateListAsync = _bus.GetType().GetMethod("UpdateAsync", new Type[] { listtype });
                             Task task2 = updateListAsync.Invoke(_bus, new Object[] { updatemessgae }) as Task;
                             task2.Wait();
-                            
+
 
                             updatecount += updatemessgae.Count;
                             insertcount += insertmessage.Count;
                         }
 
 
-                        EnPushMessageQueen(quene, messages);
+                        EnPushMessageQueen(_quene, messages);
                     }
                     else
                     {
@@ -85,7 +84,7 @@ namespace AIStudio.Service.Quartz
                 message = ex.Message;
             }
 
-            FileQuartz.WriteJobExecute(logLevel, trigger.FullName , message);
+            FileQuartz.WriteJobExecute(logLevel, trigger.FullName, message);
             return Task.CompletedTask;
         }
 
@@ -108,5 +107,5 @@ namespace AIStudio.Service.Quartz
         }
     }
 
-    
+
 }

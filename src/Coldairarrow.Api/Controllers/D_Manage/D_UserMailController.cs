@@ -23,6 +23,7 @@ namespace Coldairarrow.Api.Controllers.D_Manage
             _userBus = userBus;
             _customWebSocketMessageHandler = customWebSocketMessageHandler;
             _operator = __operator;
+            _mapper = mapper;
         }
 
         ID_UserMailBusiness _t_UserMailBus { get; }
@@ -55,17 +56,11 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<PageResult<D_UserMailDTO>> GetHistoryDataList(PageInput<D_UserMailInputDTO> input)
+        public async Task<PageResult<D_UserMailDTO>> GetPageHistoryDataList(PageInput<D_UserMailInputDTO> input)
         {
-            var dataList = await _t_UserMailBus.GetHistoryDataListAsync(input);
+            var dataList = await _t_UserMailBus.GetPageHistoryDataListAsync(input);
 
-            var data = new PageResult<D_UserMailDTO>() { Total = dataList.Total, Data = _mapper.Map<List<D_UserMailDTO>>(dataList.Data) };
-            data.Data.ForEach(async p =>
-            {
-                p.Avatar = await _userBus.GetAvatar(p.CreatorId);
-            });
-
-            return data;
+            return dataList;
         }
 
         /// <summary>
@@ -128,9 +123,9 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         /// </summary>
         /// <param name="ids">id数组,JSON数组</param>
         [HttpPost]
-        public async Task DeleteData(string ids)
+        public async Task DeleteData(List<string> ids)
         {
-            await _t_UserMailBus.DeleteDataAsync(ids.ToList<string>());
+            await _t_UserMailBus.DeleteDataAsync(ids);
         }
 
         #endregion

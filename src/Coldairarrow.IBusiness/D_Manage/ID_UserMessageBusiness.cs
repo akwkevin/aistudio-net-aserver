@@ -15,10 +15,11 @@ namespace Coldairarrow.Business.D_Manage
         Task AddDataAsync(D_UserMessage data);
         Task UpdateDataAsync(D_UserMessage data);
         Task DeleteDataAsync(List<string> ids);
-        #region 历史数据
-        Task<List<D_UserMessage>> GetHistoryDataListAsync(PageInput<D_UserMessageInputDTO> input);
+        #region 历史数据查询
+        Task<int> GetHistoryDataCountAsync(Input<D_UserMessageInputDTO> input);
+        Task<List<D_UserMessage>> GetHistoryDataListAsync(Input<D_UserMessageInputDTO> input);
         Task<PageResult<D_UserMessage>> GetPageHistoryDataListAsync(PageInput<D_UserMessageInputDTO> input);
-        Task<List<GroupData>> GetHistoryGroupDataListAsync(PageInput<D_UserMessageInputDTO> input);
+        Task<List<GroupData>> GetHistoryGroupDataListAsync(Input<D_UserMessageInputDTO> input);
         #endregion
     }
 

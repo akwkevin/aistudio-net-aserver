@@ -29,7 +29,7 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<AjaxResult<List<OA_DefType>>> GetDataList(PageInput<OA_DefTypeInputDTO> input)
+        public async Task<PageResult<OA_DefType>> GetDataList(PageInput<OA_DefTypeInputDTO> input)
         {
             var dataList = await _oA_DefTypeBus.GetDataListAsync(input);
 

@@ -74,7 +74,7 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<List<D_UserMessageDTO>> GetHistoryDataList(PageInput<D_UserMessageInputDTO> input)
+        public async Task<List<D_UserMessageDTO>> GetHistoryDataList(Input<D_UserMessageInputDTO> input)
         {
             var dataList = _mapper.Map<List<D_UserMessageDTO>>(await _t_UserMessageBus.GetHistoryDataListAsync(input));
 
@@ -139,14 +139,14 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<List<GroupData>> GetHistoryGroupDataList(PageInput<D_UserMessageInputDTO> input)
+        public async Task<PageResult<GroupData>> GetPageHistoryGroupDataList(PageInput<D_UserMessageInputDTO> input)
         {
-            var dataList = await _t_UserMessageBus.GetHistoryGroupDataListAsync(input);
+            var dataList = await _t_UserMessageBus.GetHistoryGroupDataListAsync(new Input<D_UserMessageInputDTO>() { Search = input.Search });
             dataList.ForEach(async p =>
             {
                 p.Avatar = p.CreatorId == _wsFactory.GetSmallAssistant().UserId ? _wsFactory.GetSmallAssistant().Avatar : await _userBus.GetAvatar(p.CreatorId);
             });
-            return dataList;
+            return new PageResult<GroupData>() { Total = dataList.Sum(p => p.Total), Data = dataList.Skip((input.PageIndex - 1) * input.PageRows).Take(input.PageRows).ToList() };
         }
         #region 提交
         /// <summary>
@@ -186,9 +186,9 @@ namespace Coldairarrow.Api.Controllers.D_Manage
         /// </summary>
         /// <param name="ids">id数组,JSON数组</param>
         [HttpPost]
-        public async Task DeleteData(string ids)
+        public async Task DeleteData(List<string> ids)
         {
-            await _d_UserGroupBusiness.DeleteDataAsync(ids.ToList<string>());
+            await _d_UserGroupBusiness.DeleteDataAsync(ids);
         }
 
         #endregion

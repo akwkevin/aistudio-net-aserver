@@ -66,9 +66,45 @@ namespace Coldairarrow.Business.D_Manage
             await DeleteAsync(ids);
         }
 
-        public async Task<List<D_UserMessage>> GetHistoryDataListAsync(PageInput<D_UserMessageInputDTO> input)
-        {
 
+        #endregion
+
+        #region 私有成员
+
+        #endregion
+
+        #region 历史数据查询
+        public async Task<int> GetHistoryDataCountAsync(Input<D_UserMessageInputDTO> input)
+        {
+            Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
+
+            //筛选
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
+            {
+                var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
+                where = where.And(newWhere);
+            }
+
+            if (input.Search.isGroup == false)
+            {
+                where = where.And(x => string.IsNullOrEmpty(x.GroupId) &&
+                    ((x.CreatorId == input.Search.creatorId && x.UserIds.Contains("^" + input.Search.userId + "^")) ||
+                    (x.CreatorId == input.Search.userId && x.UserIds.Contains("^" + input.Search.creatorId + "^")))
+                );
+            }
+            else
+            {
+                where = where.And(x =>
+                  x.GroupId == input.Search.userId);
+            }
+
+            int count = await GetHistoryDataCount(where, input.Search.start, input.Search.end, "CreateTime");
+
+            return count;
+        }
+        public async Task<List<D_UserMessage>> GetHistoryDataListAsync(Input<D_UserMessageInputDTO> input)
+        {
             Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
 
             //筛选
@@ -151,12 +187,12 @@ namespace Coldairarrow.Business.D_Manage
                 }
             }
 
-           var dataList = await GetPageHistoryDataList(input, where, input.Search.start, input.Search.end, "CreateTime");
+            var dataList = await GetPageHistoryDataList(input, where, input.Search.start, input.Search.end, "CreateTime");
 
             return dataList;
         }
 
-        public async Task<List<GroupData>> GetHistoryGroupDataListAsync(PageInput<D_UserMessageInputDTO> input)
+        public async Task<List<GroupData>> GetHistoryGroupDataListAsync(Input<D_UserMessageInputDTO> input)
         {
             Expression<Func<D_UserMessage, bool>> where = LinqHelper.True<D_UserMessage>();
 
@@ -203,16 +239,6 @@ namespace Coldairarrow.Business.D_Manage
 
             return dataList;
         }
-
-
-        #endregion
-
-        #region 私有成员
-
-        #endregion
-
-        #region 数据模型
-
         #endregion
     }
 

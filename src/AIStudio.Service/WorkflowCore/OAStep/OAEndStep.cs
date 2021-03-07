@@ -39,7 +39,7 @@ namespace AIStudio.Service.WorkflowCore
                 node.color = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.LightGreen);
             }
 
-            var form = await _userFormBusiness.GetEntityAsync(null, context.Workflow.Id);
+            var form = await _userFormBusiness.GetEntityAsync(context.Workflow.Id);
             if (form == null)
                 throw new ArgumentException();
            

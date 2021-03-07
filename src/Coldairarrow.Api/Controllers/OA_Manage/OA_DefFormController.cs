@@ -107,11 +107,11 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         /// <summary>
         /// 启动数据
         /// </summary>
-        /// <param name="id">保存的数据</param>
+        /// <param name="input"></param>
         [HttpPost]
-        public async Task StartData(string id)
+        public async Task StartData(IdInputDTO input)
         {
-            var data = await _oA_DefFormBus.GetTheDataAsync(id);
+            var data = await _oA_DefFormBus.GetTheDataAsync(input.id);
             data.Status = 1;           
 
             await SaveData(data);           
@@ -120,11 +120,11 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         /// <summary>
         /// 停用数据
         /// </summary>
-        /// <param name="id">保存的数据</param>
+        /// <param name="input"></param>
         [HttpPost]
-        public async Task StopData(string id)
+        public async Task StopData(IdInputDTO input)
         {
-            var data = await _oA_DefFormBus.GetTheDataAsync(id);
+            var data = await _oA_DefFormBus.GetTheDataAsync(input.id);
             data.Status = 0;
 
             await SaveData(data);

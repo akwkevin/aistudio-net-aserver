@@ -162,13 +162,9 @@ export default {
       }
       if (startValue && endValue) {
         this.loading = true
-        const creatorId = this.userInfo.Id
-        const creatorAvatar = this.userInfo.Avatar
-        const userId = this.selectedUserId
-        const userAvatar = this.selectedUserAvatar
         var queryParam = {
           creatorId: this.groupId || this.selectedUserId,
-          userId: userId,
+          userId: this.selectedUserId,
           isGroup: !!this.groupId,
           start: moment(startValue).format('YYYY-MM-DD HH:mm:ss'),
           end: moment(endValue).format('YYYY-MM-DD HH:mm:ss')

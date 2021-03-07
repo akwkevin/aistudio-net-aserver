@@ -17,6 +17,24 @@ const notFoundRouter = {
   path: '*', redirect: '/404', hidden: true
 }
 
+const userRouter = [
+  // account
+  {
+    title: '个人页',
+    icon: 'user',
+    children: [
+      {
+        path: '/account/center/Index',
+        title: '个人中心'
+      },
+      {
+        path: '/account/settings/Index',
+        title: '个人设置'
+      }
+    ]
+  }
+]
+
 // 开发模式额外路由
 const devRouter = [
   {
@@ -50,6 +68,10 @@ const devRouter = [
       {
         path: '/Develop/SelectSearch',
         title: '下拉搜索Demo'
+      },
+      {
+        path: '/Develop/G6Editor',
+        title: '流程图Demo'
       }
     ]
   }
@@ -99,6 +121,7 @@ const generatorDynamicRouter = () => {
       }
       allRouters.push(rootRouter)
 
+      res.unshift(...userRouter)
       if (!ProcessHelper.isProduction()) {
         res.push(...devRouter)
       }

@@ -36,7 +36,7 @@ namespace Coldairarrow.Util
         public int Status { get; set; }
 
         public ActRule ActRules { get; set; }
-        public Dictionary<string, string> SelectNextStep { get; set; }
+        public Dictionary<string, string> SelectNextStep { get; set; } = new Dictionary<string, string>();
     }
 
     public class CurrentStepId
@@ -59,6 +59,8 @@ namespace Coldairarrow.Util
 
     public class MyEvent
     {
+        public string EventName { get; set; }
+        public string EventKey { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
         public int Status { get; set; }
@@ -120,14 +122,14 @@ namespace Coldairarrow.Util
 
     public static class StepType
     {
-        public readonly static string Start = "Coldairarrow.Service.WorkflowCore.OAStartStep, Coldairarrow.Service";
-        public readonly static string Middle = "Coldairarrow.Service.WorkflowCore.OAMiddleStep, Coldairarrow.Service";
-        public readonly static string End = "Coldairarrow.Service.WorkflowCore.OAEndStep, Coldairarrow.Service";
-        public readonly static string Normal = "Coldairarrow.Service.WorkflowCore.OANormalStep, Coldairarrow.Service";
+        public readonly static string Start = "AIStudio.Service.WorkflowCore.OAStartStep, AIStudio.Service";
+        public readonly static string Middle = "AIStudio.Service.WorkflowCore.OAMiddleStep, AIStudio.Service";
+        public readonly static string End = "AIStudio.Service.WorkflowCore.OAEndStep, AIStudio.Service";
+        public readonly static string Normal = "AIStudio.Service.WorkflowCore.OANormalStep, AIStudio.Service";
         public readonly static string Data = "Coldairarrow.Util.OAData, Coldairarrow.Util";
-        public readonly static string Decide = "Coldairarrow.Service.WorkflowCore.OADecideStep, Coldairarrow.Service"; //"WorkflowCore.Primitives.Decide, WorkflowCore";
-        public readonly static string COBegin = "Coldairarrow.Service.WorkflowCore.OACOBeginStep, Coldairarrow.Service";
-        public readonly static string COEnd = "Coldairarrow.Service.WorkflowCore.OACOEndStep, Coldairarrow.Service";
+        public readonly static string Decide = "AIStudio.Service.WorkflowCore.OADecideStep, AIStudio.Service"; //"WorkflowCore.Primitives.Decide, WorkflowCore";
+        public readonly static string COBegin = "AIStudio.Service.WorkflowCore.OACOBeginStep, AIStudio.Service";
+        public readonly static string COEnd = "AIStudio.Service.WorkflowCore.OACOEndStep, AIStudio.Service";
     }
 
     public static class stateImage

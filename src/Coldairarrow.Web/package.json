@@ -12,6 +12,7 @@
     "postinstall": "opencollective-postinstall"
   },
   "dependencies": {
+    "@antv/g6": "^3.5.4",
     "@ckeditor/ckeditor5-build-classic": "^19.0.2",
     "@ckeditor/ckeditor5-vue": "^1.0.1",
     "ant-design-vue": "1.6.2",

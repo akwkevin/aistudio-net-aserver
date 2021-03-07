@@ -65,18 +65,10 @@ namespace AIStudio.Service.WorkflowCore
                 {
                     if (source.StepType == StepType.Decide)
                     {
-                        if (source.SelectNextStep == null)
-                        {
-                            source.SelectNextStep = new Dictionary<string, string>();
-                        }
                         source.SelectNextStep.Add(edge.targetId, "data.Flag" + edge.label);
                     }
                     else if (source.StepType == StepType.COBegin)
                     {
-                        if (source.SelectNextStep == null)
-                        {
-                            source.SelectNextStep = new Dictionary<string, string>();
-                        }
                         source.SelectNextStep.Add(edge.targetId, "True");
                     }
                     else
@@ -177,7 +169,7 @@ namespace AIStudio.Service.WorkflowCore
 
             if (!string.IsNullOrEmpty(data.ApplicantDepartmentId))
             {
-                department = await _base_DepartmentBusiness.GetEntityAsync(null, data.ApplicantDepartmentId);
+                department = await _base_DepartmentBusiness.GetEntityAsync(data.ApplicantDepartmentId);
                 if (department != null)
                 {
                     data.ApplicantDepartment = department.Name;

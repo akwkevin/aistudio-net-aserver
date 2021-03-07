@@ -110,7 +110,7 @@ export default {
     ArticlePage,
     ProjectPage
   },
-  data() {
+  data () {
     return {
       tags: ['很有想法的', '专注设计', '辣~', '大长腿', '川妹子', '海纳百川'],
 
@@ -137,12 +137,12 @@ export default {
       noTitleKey: 'app'
     }
   },
-  mounted() {
+  mounted () {
     this.getTeams()
   },
   filters: {
-    DepartmentFilter(names) {
-      if (names === null || typeof names !== 'undefined') {
+    DepartmentFilter (names) {
+      if (names === null || typeof names === 'undefined') {
         return ''
       } else {
         return names.replace(/\^/g, '.').slice(1, -1)
@@ -153,29 +153,29 @@ export default {
     ...mapGetters(['userInfo'])
   },
   methods: {
-    getTeams() {},
+    getTeams () {},
 
-    handleTabChange(key, type) {
+    handleTabChange (key, type) {
       this[type] = key
     },
 
-    handleTagClose(removeTag) {
+    handleTagClose (removeTag) {
       const tags = this.tags.filter(tag => tag !== removeTag)
       this.tags = tags
     },
 
-    showTagInput() {
+    showTagInput () {
       this.tagInputVisible = true
       this.$nextTick(() => {
         this.$refs.tagInput.focus()
       })
     },
 
-    handleInputChange(e) {
+    handleInputChange (e) {
       this.tagInputValue = e.target.value
     },
 
-    handleTagInputConfirm() {
+    handleTagInputConfirm () {
       const inputValue = this.tagInputValue
       let tags = this.tags
       if (inputValue && !tags.includes(inputValue)) {

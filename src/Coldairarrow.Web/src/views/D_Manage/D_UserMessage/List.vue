@@ -278,7 +278,7 @@ export default {
         }
 
         this.$http
-          .post('/D_Manage/D_UserMessage/GetHistoryDataPageList', {
+          .post('/D_Manage/D_UserMessage/GetPageHistoryDataList', {
             Search: queryParam
           })
           .then((resJson) => {

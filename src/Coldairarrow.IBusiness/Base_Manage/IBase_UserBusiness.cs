@@ -10,7 +10,6 @@ namespace Coldairarrow.Business.Base_Manage
     public interface IBase_UserBusiness : IBaseBusiness<Base_User>
     {
         Task<PageResult<Base_UserDTO>> GetDataListAsync(PageInput<Base_UsersInputDTO> input);
-        Task<List<SelectOption>> GetOptionListAsync(OptionListInputDTO input);
         Task<Base_UserDTO> GetTheDataAsync(string id);
         Task AddDataAsync(UserEditInputDTO input);
         Task UpdateDataAsync(UserEditInputDTO input);

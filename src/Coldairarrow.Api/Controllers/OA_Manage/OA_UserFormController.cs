@@ -29,7 +29,6 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
             IWorkflowRegistry workflowRegistry,
             IWorkflowHost workflowHost,
             IOperator ioperator,
-            ILogger logger,
             IBase_UserBusiness userBus,
             IMapper mapper)
         {
@@ -43,7 +42,6 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
             _workflowStore = workflowStore;
             _workflowHost = workflowHost;
             _operator = ioperator;
-            _logger = logger;
             _userBus = userBus;
             _mapper = mapper;
         }
@@ -56,7 +54,6 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         IWorkflowRegistry _workflowRegistry { get; }
         IWorkflowHost _workflowHost { get; }
         IOperator _operator { get; }
-        ILogger _logger { get; }
         IBase_UserBusiness _userBus { get; }
 
         IMapper _mapper { get; }
@@ -78,16 +75,10 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         }
 
         [HttpPost]
-        public async Task<PageResult<OA_UserFormDTO>> GetHistoryDataList(PageInput<OA_UserFormInputDTO> input)
+        public async Task<PageResult<OA_UserFormDTO>> GetPageHistoryDataList(PageInput<OA_UserFormInputDTO> input)
         {
-            var result = await _oA_UserFormBus.GetPageHistoryDataList(input);
-
-            var dataList = _mapper.Map<List<OA_UserFormDTO>>(result.Data);
-            dataList.ForEach(async p =>
-            {
-                p.Avatar = await _userBus.GetAvatar(p.CreatorId);
-            });
-            return new PageResult<OA_UserFormDTO>() { Total = result.Total, Data = dataList };
+            var dataList = await _oA_UserFormBus.GetPageHistoryDataListAsync(input);
+            return dataList;
         }
 
         /// <summary>
@@ -185,14 +176,12 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
                     //自动通过第一个节点
 
                     OA_UserFormStep step = new OA_UserFormStep();
-
+                    InitEntity(step);
                     step.UserFormId = workflowId;
-                    step.CreatorId = _operator?.UserId;
-                    step.CreatorName = _operator?.Property?.UserName;
-                    step.CreateTime = DateTime.Now;
                     step.RoleNames = "发起人";
                     step.Remarks = "发起了流程";
                     step.Status = (int)OAStatus.Approve;
+                  
 
                     await _oA_UserFormStepBusiness.AddDataAsync(step);
                 });
@@ -222,11 +211,10 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         /// 审批数据
         /// </summary>
         [HttpPost]
-        public async Task<AjaxResult> EventData(string eventName, string eventKey, string eventDataJson)
+        public async Task<AjaxResult> EventData(MyEvent eventData)
         {
-            MyEvent eventData = eventDataJson.ToObject<MyEvent>();
-            await _workflowHost.PublishEvent(eventName, eventKey, eventData);
-            var result = await _oA_UserFormBus.DequeueWork(eventKey);
+            await _workflowHost.PublishEvent(eventData.EventName, eventData.EventKey, eventData);
+            var result = await _oA_UserFormBus.DequeueWork(eventData.EventKey);
             AjaxResult res = new AjaxResult
             {
                 Success = true,
@@ -240,24 +228,24 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         /// 审批数据
         /// </summary>
         [HttpPost]
-        public async Task DisCardData(string id, string remark)
+        public async Task DisCardData(DisCardInput input)
         {
-            var data = await _oA_UserFormBus.GetTheDataAsync(id);
+            var data = await _oA_UserFormBus.GetTheDataAsync(input.id);
             data.Status = (int)OAStatus.Discard;
             UpdateEntity(data);           
 
             OA_UserFormStep step = new OA_UserFormStep();
-            step.UserFormId = id;
+            step.UserFormId = input.id;
             step.CreatorId = _operator?.UserId;
             step.CreatorName = _operator?.Property?.UserName;
             step.CreateTime = DateTime.Now;
             step.RoleNames = "创建者";
-            step.Remarks = remark;
+            step.Remarks = input.remark;
             step.Status = (int)OAStatus.Discard;
 
             var res = await _oA_UserFormBus.RunTransactionAsync(async () =>
             {
-                await _workflowHost.TerminateWorkflow(id);
+                await _workflowHost.TerminateWorkflow(input.id);
                 await _oA_UserFormBus.UpdateDataAsync(data);
                 await _oA_UserFormStepBusiness.AddDataAsync(step);
             });
@@ -266,23 +254,23 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         }
 
         [HttpPost]
-        public async Task<bool> Suspend(string id)
+        public async Task<bool> Suspend(IdInputDTO input)
         {
-            return await _workflowHost.SuspendWorkflow(id);
+            return await _workflowHost.SuspendWorkflow(input.id);
         }
 
         [HttpPost]
-        public async Task<bool> Resume(string id)
+        public async Task<bool> Resume(IdInputDTO input)
         {
-            return await _workflowHost.ResumeWorkflow(id);
+            return await _workflowHost.ResumeWorkflow(input.id);
         }
 
         [HttpPost]
-        public async Task Terminate(string id)
+        public async Task Terminate(IdInputDTO input)
         {
-            if (await _workflowHost.TerminateWorkflow(id))
+            if (await _workflowHost.TerminateWorkflow(input.id))
             {
-                await _oA_UserFormBus.DeleteDataAsync(new List<string>() { id });
+                await _oA_UserFormBus.DeleteDataAsync(new List<string>() { input.id });
             }
             else
             {
@@ -294,7 +282,11 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
         public void TestJsonData(string json)
         {
             string str = json;
-            _logger.LogTrace(UserLogType.工作流程.ToEventId(), str);
         }
+    }
+
+    public class DisCardInput: IdInputDTO
+    {
+        public string remark { get; set; }
     }
 }

@@ -22,20 +22,11 @@ namespace AIStudio.Service.Quartz
 {
     public class PushMessageJob : IJob
     {
-        ICustomWebSocketFactory _wsFactory { get; }
-        ID_UserMessageBusiness _userMessageBusiness { get; }
-        ID_UserMailBusiness _userMailBusiness { get; }
-        IOA_UserFormBusiness _userFormBusiness { get; }
-        IDistributedCache _distributed { get; }
-
-        public PushMessageJob(ICustomWebSocketFactory wsFactory, ID_UserMessageBusiness userMessageBusiness, ID_UserMailBusiness userMailBusiness, IOA_UserFormBusiness userFormBusiness, IDistributedCache distributed)
-        {
-            _wsFactory = wsFactory;
-            _userMessageBusiness = userMessageBusiness;
-            _userMailBusiness = userMailBusiness;
-            _userFormBusiness = userFormBusiness;
-            _distributed = distributed;
-        }
+        ICustomWebSocketFactory _wsFactory { get { return ServiceLocator.Instance.GetRequiredService<ICustomWebSocketFactory>(); } }
+        ID_UserMessageBusiness _userMessageBusiness { get { return ServiceLocator.Instance.GetRequiredService<ID_UserMessageBusiness>(); } }
+        ID_UserMailBusiness _userMailBusiness { get { return ServiceLocator.Instance.GetRequiredService<ID_UserMailBusiness>(); } }
+        IOA_UserFormBusiness _userFormBusiness { get { return ServiceLocator.Instance.GetRequiredService<IOA_UserFormBusiness>(); } }
+        IDistributedCache _distributed { get { return ServiceLocator.Instance.GetRequiredService<IDistributedCache>(); } }
 
         public Task Execute(IJobExecutionContext context)
         {
@@ -65,9 +56,8 @@ namespace AIStudio.Service.Quartz
                     {
                         customWebSocket.IsFirstPushed = true;
 
-                        var groupdata = _userMessageBusiness.GetHistoryGroupDataListAsync(new PageInput<D_UserMessageInputDTO>()
+                        var result1 = _userMessageBusiness.GetHistoryDataCountAsync(new Input<D_UserMessageInputDTO>()
                         {
-                            PageRows = 0,
                             Search = new D_UserMessageInputDTO()
                             {
                                 userId = customWebSocket.UserId,
@@ -75,29 +65,32 @@ namespace AIStudio.Service.Quartz
                             }
                         }).Result;
 
-                       var result2 = _userMailBusiness.GetHistoryDataListAsync(new PageInput<D_UserMailInputDTO>()
-                       {
-                           PageRows = 0,
-                           Search = new D_UserMailInputDTO()
-                           {
-                               userId = customWebSocket.UserId,
-                               markflag = true,
-                           }
-                       }).Result;
+                        var result2 = _userMailBusiness.GetHistoryDataCountAsync(new Input<D_UserMailInputDTO>()
+                        {
+                            Search = new D_UserMailInputDTO()
+                            {
+                                userId = customWebSocket.UserId,
+                                markflag = true,
+                            }
+                        }).Result;
 
-                        //var pagination3 = new Pagination() { PageRows = 0 };
-                        //_userFormBusiness.GetHistoryDataListAsync(pagination3, null, null, customWebSocket.UserId, null, null, null).Wait();
+                        var result3 = _userFormBusiness.GetHistoryDataCountAsync(new Input<OA_UserFormInputDTO>()
+                        {
+                            Search = new OA_UserFormInputDTO()
+                            {
+                                userId = customWebSocket.UserId,
+                            }
+                        }).Result;
                         //查询并发送给客户端
-                        //stringBuilder.Append();
                         var send = new MessageResult()
                         {
                             Success = true,
                             Data = new
                             {
                                 Clearcache = clearcache,
-                                UserMessageCount = groupdata.Sum(p => p.Total),
-                                UserMailCount = result2.Total,
-                                //UserFormCount = pagination3.Total,
+                                UserMessageCount = result1,
+                                UserMailCount = result2,
+                                UserFormCount = result3,
                             },
                             MessageType = WSMessageType.PushType
                         };

@@ -20,7 +20,9 @@ namespace Coldairarrow.Business.OA_Manage
         Task DeleteDataAsync(List<string> ids);
 
         #region 历史数据查询
-        Task<PageResult<OA_UserForm>> GetPageHistoryDataList(PageInput<OA_UserFormInputDTO> input);
+        Task<int> GetHistoryDataCountAsync(Input<OA_UserFormInputDTO> input);
+        Task<List<OA_UserFormDTO>> GetHistoryDataListAsync(Input<OA_UserFormInputDTO> input);
+        Task<PageResult<OA_UserFormDTO>> GetPageHistoryDataListAsync(PageInput<OA_UserFormInputDTO> input);
         #endregion
 
     }

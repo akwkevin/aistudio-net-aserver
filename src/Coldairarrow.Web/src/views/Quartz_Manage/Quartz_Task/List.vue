@@ -176,7 +176,7 @@ export default {
           PageRows: this.pagination.pageSize,
           SortField: this.sorter.field || 'Id',
           SortType: this.sorter.order,
-          ...this.queryParam,
+          Search: this.queryParam,
           ...this.filters
         })
         .then((resJson) => {

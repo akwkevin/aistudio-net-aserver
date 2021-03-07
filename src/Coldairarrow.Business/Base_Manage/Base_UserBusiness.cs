@@ -168,8 +168,8 @@ namespace Coldairarrow.Business.Base_Manage
         {
             if (string.IsNullOrEmpty(userId))
                 return null;
-
-            var user = await GetEntityAsync(userId);
+           
+            var user = await _userCache.GetCacheAsync(userId);
 
             return user?.Avatar;
         }

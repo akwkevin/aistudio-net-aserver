@@ -198,7 +198,7 @@ export default {
         onOk () {
           return new Promise((resolve, reject) => {
             thisObj.$http
-              .post('/D_Manage/D_UserMessage/DeleteData', { ids: JSON.stringify([thisObj.entity.Id]) })
+              .post('/D_Manage/D_UserMessage/DeleteData', { ids: [thisObj.entity.Id] })
               .then((resJson) => {
                 resolve()
 

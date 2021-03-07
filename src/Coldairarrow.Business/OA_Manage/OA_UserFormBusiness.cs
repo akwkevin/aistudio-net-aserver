@@ -117,13 +117,14 @@ namespace Coldairarrow.Business.OA_Manage
         public async Task<OA_UserFormDTO> GetTheDataAsync(string id)
         {
             //return Mapper.Map<OA_UserFormDTO>(await GetEntityAsync(id));
+
             var form = await (from a in Db.GetIQueryable<OA_UserForm>()
-                              join b in Db.GetIQueryable<OA_UserFormStep>() on a.Id equals b.UserFormId into j1
+                              let j1 = Db.GetIQueryable<OA_UserFormStep>(false).Where(b => a.Id == b.UserFormId).OrderBy(b => b.CreateTime).ToList()                             
                               where a.Id.Equals(id)
                               select new
                               {
                                   UserForm = a,
-                                  Comments = j1.OrderBy(p => p.CreateTime).ToList()
+                                  Comments = j1
                               }).FirstOrDefaultAsync();
 
             OA_UserFormDTO formdto = _mapper.Map<OA_UserFormDTO>(form.UserForm);
@@ -131,7 +132,7 @@ namespace Coldairarrow.Business.OA_Manage
 
             foreach (var comment in formdto.Comments)
             {
-                //comment.Avatar = await _userBus.GetAvatar(comment.CreatorId);
+                comment.Avatar = await _userBus.GetAvatar(comment.CreatorId);
             }
 
             return formdto;
@@ -157,7 +158,79 @@ namespace Coldairarrow.Business.OA_Manage
 
 
         #region 历史数据查询
-        public async Task<PageResult<OA_UserForm>> GetPageHistoryDataList(PageInput<OA_UserFormInputDTO> input)
+        public async Task<int> GetHistoryDataCountAsync(Input<OA_UserFormInputDTO> input)
+        {
+            var where = LinqHelper.True<OA_UserForm>();
+
+            //筛选
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
+            {
+                var newWhere = DynamicExpressionParser.ParseLambda<OA_UserForm, bool>(
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
+                where = where.And(newWhere);
+            }
+
+            if (!input.Search.userId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.UserIds.Contains("^" + input.Search.userId + "^") && p.Status == (int)OAStatus.Being);
+            }
+
+            if (!input.Search.applicantUserId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.ApplicantUserId == input.Search.applicantUserId && p.Status == (int)OAStatus.Being);
+            }
+
+            if (!input.Search.alreadyUserIds.IsNullOrEmpty())
+            {
+                where = where.And(p => p.AlreadyUserIds.Contains("^" + input.Search.alreadyUserIds + "^"));
+            }
+
+            if (!input.Search.creatorId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.CreatorId == input.Search.creatorId);
+            }
+
+            var count = await GetHistoryDataCount(where, input.Search.start, input.Search.end, "CreateTime");
+
+            return count;
+        }
+        public async Task<List<OA_UserFormDTO>> GetHistoryDataListAsync(Input<OA_UserFormInputDTO> input)
+        {
+            var where = LinqHelper.True<OA_UserForm>();
+
+            //筛选
+            if (!input.Search.condition.IsNullOrEmpty() && !input.Search.keyword.IsNullOrEmpty())
+            {
+                var newWhere = DynamicExpressionParser.ParseLambda<OA_UserForm, bool>(
+                    ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
+                where = where.And(newWhere);
+            }
+
+            if (!input.Search.userId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.UserIds.Contains("^" + input.Search.userId + "^") && p.Status == (int)OAStatus.Being);
+            }
+
+            if (!input.Search.applicantUserId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.ApplicantUserId == input.Search.applicantUserId && p.Status == (int)OAStatus.Being);
+            }
+
+            if (!input.Search.alreadyUserIds.IsNullOrEmpty())
+            {
+                where = where.And(p => p.AlreadyUserIds.Contains("^" + input.Search.alreadyUserIds + "^"));
+            }
+
+            if (!input.Search.creatorId.IsNullOrEmpty())
+            {
+                where = where.And(p => p.CreatorId == input.Search.creatorId);
+            }
+
+            var dataList = await GetHistoryDataQueryable(where, input.Search.start, input.Search.end, "CreateTime").ProjectTo<OA_UserFormDTO>(_mapper.ConfigurationProvider).ToListAsync();
+
+            return dataList;
+        }
+        public async Task<PageResult<OA_UserFormDTO>> GetPageHistoryDataListAsync(PageInput<OA_UserFormInputDTO> input)
         {   
             var where = LinqHelper.True<OA_UserForm>();
 
@@ -189,11 +262,13 @@ namespace Coldairarrow.Business.OA_Manage
                 where = where.And(p => p.CreatorId == input.Search.creatorId);
             }
 
-            var dataList = await GetPageHistoryDataList(input, where, input.Search.start, input.Search.end, "CreateTime");
+            var dataList = await GetHistoryDataQueryable(where, input.Search.start, input.Search.end, "CreateTime").ProjectTo<OA_UserFormDTO>(_mapper.ConfigurationProvider).GetPageResultAsync(input);
+            dataList.Data.ForEach(async p =>
+            {
+                p.Avatar = await _userBus.GetAvatar(p.CreatorId);
+            });
 
             return dataList;
-
-
         }
 
         #endregion

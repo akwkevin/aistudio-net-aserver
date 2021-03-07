@@ -192,7 +192,7 @@ export default {
         title: '确认删除吗?',
         onOk () {
           return new Promise((resolve, reject) => {
-            thisObj.$http.post('/D_Manage/D_UserMail/DeleteData', { ids: JSON.stringify(ids) }).then((resJson) => {
+            thisObj.$http.post('/D_Manage/D_UserMail/DeleteData', ids).then((resJson) => {
               resolve()
 
               if (resJson.Success) {

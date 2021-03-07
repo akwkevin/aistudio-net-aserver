@@ -38,7 +38,7 @@
         </a-form-model-item>
         <a-form-model-item label="角色" prop="RoleIdList">
           <a-select v-model="entity.RoleIdList" allowClear mode="multiple">
-            <a-select-option v-for="item in RoleOptionList" :key="item.Id">{{ item.RoleName }}</a-select-option>
+            <a-select-option v-for="item in RoleOptionList" :key="item.value" >{{ d.text }}</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-form-model>
@@ -55,7 +55,7 @@ export default {
       default: null
     }
   },
-  data() {
+  data () {
     return {
       layout: {
         labelCol: { span: 5 },
@@ -74,7 +74,7 @@ export default {
     }
   },
   methods: {
-    init() {
+    init () {
       this.visible = true
       this.entity = {}
       this.$nextTick(() => {
@@ -91,7 +91,7 @@ export default {
         }
       })
     },
-    openForm(id) {
+    openForm (id) {
       this.init()
 
       if (id) {
@@ -103,7 +103,7 @@ export default {
         })
       }
     },
-    handleSubmit() {
+    handleSubmit () {
       this.$refs['form'].validate(valid => {
         if (!valid) {
           return
