@@ -35,6 +35,8 @@ namespace Coldairarrow.Util
         /// <summary>
         /// 孩子节点
         /// </summary>
-        public List<object> Children { get; set; } 
+        public List<object> Children { get; set; }
+
+        public bool IsExpand { get; set; }
     }
 }

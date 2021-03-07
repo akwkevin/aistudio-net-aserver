@@ -30,6 +30,7 @@ namespace Coldairarrow.Business.Base_Manage
                 {
                     Id = x.Id,
                     ParentId = x.ParentId,
+                    ParentIds = x.ParentIds,
                     Text = x.Name,
                     Value = x.Id
                 }).ToList();

@@ -1,36 +1,41 @@
 ﻿<template>
   <a-card :bordered="false">
-    <div slot="title" class="table-title">
-      <a-button type="primary" icon="plus" @click="hanldleAdd()">新建</a-button>
-      <a-button
-        type="primary"
-        icon="minus"
-        @click="handleDelete(selectedRowKeys)"
-        :disabled="!hasSelected()"
-        :loading="loading"
-      >删除</a-button
-      >
-      <a-button type="primary" icon="redo" @click="getDataList()">刷新</a-button>
+    <div class="table-operator">
+      <a-row :gutter="5">
+        <a-col :lg="11" :md="12" :sm="24">
+          <a-button type="primary" icon="plus" @click="hanldleAdd()">新建</a-button>
+          <a-button
+            type="primary"
+            icon="minus"
+            @click="handleDelete(selectedRowKeys)"
+            :disabled="!hasSelected()"
+            :loading="loading"
+          >删除</a-button
+          >
+          <a-button type="primary" icon="redo" @click="getDataList()">刷新</a-button>
+        </a-col>
+        <a-col :lg="5" :md="5" :sm="24">
+          <a-select style="width:100%" allowClear v-model="queryParam.condition">
+            <a-select-option key="Type">分类</a-select-option>
+            <a-select-option key="Name">标题</a-select-option>
+            <a-select-option key="Text">摘要</a-select-option>
+            <a-select-option key="CreatorName">创建者</a-select-option>
+            <a-select-option key="Status">状态</a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :lg="8" :md="7" :sm="24">
+          <a-input-search
+            allow-clear
+            v-model="queryParam.keyword"
+            placeholder="关键字"
+            enter-button="Search"
+            @search="getDataList"
+          />
 
-      <div slot="extra" style="float: right">
-        <a-select style="width: 100px" allowClear v-model="queryParam.condition">
-          <a-select-option key="Type">分类</a-select-option>
-          <a-select-option key="Name">标题</a-select-option>
-          <a-select-option key="Text">摘要</a-select-option>
-          <a-select-option key="CreatorName">创建者</a-select-option>
-          <a-select-option key="Status">状态</a-select-option>
-        </a-select>
-
-        <a-input-search
-          allow-clear
-          style="margin-left: 8px; width: 272px"
-          v-model="queryParam.keyword"
-          placeholder="关键字"
-          enter-button="Search"
-          @search="getDataList"
-        />
-      </div>
+        </a-col>
+      </a-row>
     </div>
+
     <a-table
       ref="table"
       :columns="columns"

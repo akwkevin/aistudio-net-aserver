@@ -1,47 +1,39 @@
 ﻿<template>
   <a-card :bordered="false">
-    <div slot="title">
-      <a-radio-group button-style="solid" v-model="status" @change="getDataList">
-        <a-radio-button value="processing">待审批</a-radio-button>
-        <a-radio-button value="waiting">等待中</a-radio-button>
-        <a-radio-button value="finish">审批过</a-radio-button>
-        <a-radio-button value="created">创建的</a-radio-button>
-        <a-radio-button value="all">全部</a-radio-button>
-      </a-radio-group>
-
-      <a-button
-        style="margin-left: 16px;"
-        type="primary"
-        icon="minus"
-        v-if="hasPerm('OA_UserForm.Delete')"
-        @click="handleDelete(selectedRowKeys)"
-        :disabled="!hasSelected()"
-        :loading="loading"
-      >删除</a-button>
-
-      <a-button style="margin-left: 16px;" type="primary" icon="redo" @click="getDataList()">刷新</a-button>
-      <div slot="extra" style="float:right;">
-        <a-select
-          style="margin-left: 16px; width: 100px;"
-          allowClear
-          v-model="queryParam.condition"
-        >
-          <a-select-option key="Type">分类</a-select-option>
-          <a-select-option key="DefFormName">标题</a-select-option>
-          <a-select-option key="Text">摘要</a-select-option>
-          <a-select-option key="ApplicantUser">申请人</a-select-option>
-          <a-select-option key="UserNames">审批人</a-select-option>
-        </a-select>
-
-        <a-input-search
-          allow-clear
-          style="margin-left: 16px; width: 272px;"
-          v-model="queryParam.keyword"
-          placeholder="关键字"
-          enter-button="Search"
-          @search="getDataList"
-        />
-      </div>
+    <div class="table-operator">
+      <a-row :gutter="5">
+        <a-col :lg="11" :md="12" :sm="24">
+          <a-radio-group button-style="solid" v-model="status" @change="getDataList">
+            <a-radio-button value="processing">待审批</a-radio-button>
+            <a-radio-button value="waiting">等待中</a-radio-button>
+            <a-radio-button value="finish">审批过</a-radio-button>
+            <a-radio-button value="created">创建的</a-radio-button>
+            <a-radio-button value="all">全部</a-radio-button>
+          </a-radio-group>
+        </a-col>
+        <a-col :lg="5" :md="5" :sm="24">
+          <a-select
+            style="width:100%"
+            allowClear
+            v-model="queryParam.condition"
+          >
+            <a-select-option key="Type">分类</a-select-option>
+            <a-select-option key="DefFormName">标题</a-select-option>
+            <a-select-option key="Text">摘要</a-select-option>
+            <a-select-option key="ApplicantUser">申请人</a-select-option>
+            <a-select-option key="UserNames">审批人</a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :lg="8" :md="7" :sm="24">
+          <a-input-search
+            allow-clear
+            v-model="queryParam.keyword"
+            placeholder="关键字"
+            enter-button="Search"
+            @search="getDataList"
+          />
+        </a-col>
+      </a-row>
     </div>
 
     <a-table
@@ -75,7 +67,7 @@
     </a-table>
 
     <edit-form ref="editForm" :parentObj="this"></edit-form>
-  </a-card>
+    </div></a-card>
 </template>
 
 <script>

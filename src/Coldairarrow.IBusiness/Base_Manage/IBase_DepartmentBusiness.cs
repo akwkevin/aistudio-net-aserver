@@ -27,5 +27,6 @@ namespace Coldairarrow.Business.Base_Manage
         public string title { get => Text; }
         public string value { get => Id; }
         public string key { get => Id; }
+        public string ParentIds { get; set; }
     }
 }
