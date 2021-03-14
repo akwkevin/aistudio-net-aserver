@@ -164,7 +164,9 @@ namespace Coldairarrow.Api
                          new Base_Action(){ Id="1193158266167758864",Deleted = false, ParentId="1193158266167758863", Type = ActionType.权限, Name="增",       Url=null,                               Value="OA_DefType.Add",        NeedAction=true,    Icon=null,             Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1193158266167758865",Deleted = false, ParentId="1193158266167758863", Type = ActionType.权限, Name="改",       Url=null,                               Value="OA_DefType.Edit",       NeedAction=true,    Icon=null,             Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1193158266167758866",Deleted = false, ParentId="1193158266167758863", Type = ActionType.权限, Name="删",       Url=null,                               Value="OA_DefType.Delete",     NeedAction=true,    Icon=null,             Sort=1, CreateTime=DateTime.Now},
-                    };
+                         new Base_Action(){ Id="1193158266167758967",Deleted = false, ParentId=null,                  Type = ActionType.菜单, Name="个人页",   Url=null,                               Value=null,                    NeedAction=true,    Icon="user",           Sort=1, CreateTime=DateTime.Now},
+                         new Base_Action(){ Id="1193158266167758968",Deleted = false, ParentId="1193158266167758967", Type = ActionType.页面, Name="个人中心", Url="/account/center/Index",            Value=null,                    NeedAction=false,   Icon="user",           Sort=1, CreateTime=DateTime.Now},
+                         new Base_Action(){ Id="1193158266167758969",Deleted = false, ParentId="1193158266167758967", Type = ActionType.页面, Name="个人设置", Url="/account/settings/Index",          Value=null,                    NeedAction=false,   Icon="user",           Sort=1, CreateTime=DateTime.Now}, };
 
                 var result = actionBusiness.InsertAsync(actions).Result;
                 logger.LogTrace("action created");

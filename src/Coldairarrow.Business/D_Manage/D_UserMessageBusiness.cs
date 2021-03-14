@@ -98,6 +98,10 @@ namespace Coldairarrow.Business.D_Manage
                 where = where.And(x =>
                   x.GroupId == input.Search.userId);
             }
+            if (input.Search.markflag == true)
+            {
+                where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
+            }
 
             int count = await GetHistoryDataCount(where, input.Search.start, input.Search.end, "CreateTime");
 
@@ -126,6 +130,10 @@ namespace Coldairarrow.Business.D_Manage
             {
                 where = where.And(x =>
                   x.GroupId == input.Search.userId);
+            }
+            if (input.Search.markflag == true)
+            {
+                where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
             }
 
             List<D_UserMessage> dataList = await GetHistoryDataList(where, input.Search.start, input.Search.end, "CreateTime");
@@ -172,18 +180,14 @@ namespace Coldairarrow.Business.D_Manage
                 if (input.Search.creatorId != input.Search.userId)
                 {
                     where = where.And(x => x.CreatorId == input.Search.userId || x.UserIds.Contains("^" + input.Search.userId + "^"));
-                    if (input.Search.markflag == true)
-                    {
-                        where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
-                    }
                 }
                 else
                 {
-                    where = where.And(x => x.UserIds.Contains("^" + input.Search.userId + "^"));
-                    if (input.Search.markflag == true)
-                    {
-                        where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
-                    }
+                    where = where.And(x => x.UserIds.Contains("^" + input.Search.userId + "^"));                  
+                }
+                if (input.Search.markflag == true)
+                {
+                    where = where.And(p => p.ReadingMarks == null || !p.ReadingMarks.Contains("^" + input.Search.userId + "^"));
                 }
             }
 

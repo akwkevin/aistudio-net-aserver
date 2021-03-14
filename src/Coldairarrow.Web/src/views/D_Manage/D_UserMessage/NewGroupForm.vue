@@ -223,7 +223,7 @@ export default {
           const userIds = []
           thisObj.tags.forEach((item) => {
             const tempuser = thisObj.useroption.find((d) => d.value === item)
-            if (tempuser !== null && typeof tempuser !== 'undefined' && tempuser.Id !== thisObj.userInfo.Id) {
+            if (tempuser !== null && typeof tempuser !== 'undefined' && tempuser.value !== thisObj.userInfo.Id) {
               userNames.push(tempuser.text)
               userIds.push(tempuser.value)
             }

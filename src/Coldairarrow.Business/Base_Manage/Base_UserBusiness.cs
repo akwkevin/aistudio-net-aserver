@@ -19,18 +19,21 @@ namespace Coldairarrow.Business.Base_Manage
     {
         readonly IOperator _operator;
         readonly IMapper _mapper;
+        readonly IBase_DepartmentBusiness _departmentBusiness;
         public Base_UserBusiness(
             IDbAccessor db,
             IBase_UserCache userCache,
             IOperator @operator,
             IMapper mapper,
-            IShardingDbAccessor shardingDb
+            IShardingDbAccessor shardingDb,
+            IBase_DepartmentBusiness departmentBusiness
             )
             : base(db)
         {
             _userCache = userCache;
             _operator = @operator;
             _mapper = mapper;
+            _departmentBusiness = departmentBusiness;
         }
         IBase_UserCache _userCache { get; }
         protected override string _textField => "UserName";
@@ -86,6 +89,20 @@ namespace Coldairarrow.Business.Base_Manage
                     aUser.RoleNameList = roleList.Select(x => x.RoleName).ToList();
                 });
             }
+        }
+
+
+        public async Task<object> GetDataListAsyncByDepartment(string departmentid)
+        {
+            var departments = await _departmentBusiness.GetIQueryable().Where(p => p.ParentIds.Contains(departmentid)).Select(p => p.Id).ToListAsync();
+            departments.Add(departmentid);
+
+            List<Base_User> users = new List<Base_User>();
+            foreach (var department in departments)
+            {
+                users.AddRange(await GetIQueryable().Where(p => p.DepartmentId == department).ToListAsync());
+            }
+            return users;
         }
 
         public async Task<Base_UserDTO> GetTheDataAsync(string id)

@@ -32,6 +32,12 @@ namespace Coldairarrow.Api.Controllers.Base_Manage
         }
 
         [HttpPost]
+        public async Task<object> GetDataListByDepartment(IdInputDTO input)
+        {
+            return await _userBus.GetDataListAsyncByDepartment(input.id);
+        }
+
+        [HttpPost]
         public async Task<Base_UserDTO> GetTheData(IdInputDTO input)
         {
             return await _userBus.GetTheDataAsync(input.id) ?? new Base_UserDTO();

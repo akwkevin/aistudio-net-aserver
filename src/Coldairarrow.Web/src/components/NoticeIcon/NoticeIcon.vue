@@ -208,6 +208,10 @@ export default {
         }
         this.$http
           .post('/D_Manage/D_UserMessage/GetPageHistoryGroupDataList', {
+            PageIndex: this.pagination2.current,
+            PageRows: this.pagination2.pageSize,
+            SortField: this.sorter.field || 'Id',
+            SortType: this.sorter.order,
             Search: queryParam2
           })
           .then(resJson => {
@@ -274,10 +278,10 @@ export default {
       this.totalcount = this.pagination1.total + this.pagination2.total + this.pagination3.total
       const clearcache = resmsg.Clearcache
 
-      if (clearcache.indexOf('Base_User') != -1) {
+      if (clearcache.indexOf('Base_User') !== -1) {
         this.ClearAllUser()
       }
-      if (clearcache.indexOf('Base_Role') != -1) {
+      if (clearcache.indexOf('Base_Role') !== -1) {
         this.ClearAllRole()
       }
     }

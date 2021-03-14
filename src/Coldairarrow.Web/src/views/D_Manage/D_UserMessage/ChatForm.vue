@@ -190,7 +190,7 @@ export default {
           isGroup: !!this.groupId
         }
         this.$http
-          .post('/D_Manage/D_UserMessage/GetPageHistoryDataList', {
+          .post('/D_Manage/D_UserMessage/GetHistoryDataList', {
             Search: queryParam
           })
           .then((resJson) => {

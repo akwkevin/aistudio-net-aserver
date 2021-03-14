@@ -121,7 +121,6 @@ const generatorDynamicRouter = () => {
       }
       allRouters.push(rootRouter)
 
-      res.unshift(...userRouter)
       if (!ProcessHelper.isProduction()) {
         res.push(...devRouter)
       }

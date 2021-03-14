@@ -2,8 +2,10 @@
 using Coldairarrow.Entity.Base_Manage;
 using Coldairarrow.Util;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Coldairarrow.Api.Controllers.Base_Manage
@@ -39,7 +41,6 @@ namespace Coldairarrow.Api.Controllers.Base_Manage
         {
             return await _departmentBus.GetTreeDataListAsync(input);
         }
-
         #endregion
 
         #region 提交
