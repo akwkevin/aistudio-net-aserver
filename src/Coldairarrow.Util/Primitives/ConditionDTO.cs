@@ -5,7 +5,7 @@
     /// </summary>
     public class ConditionDTO
     {
-        public string Condition { get; set; }
-        public string Keyword { get; set; }
+        public string condition { get; set; }
+        public string keyword { get; set; }
     }
 }

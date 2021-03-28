@@ -92,7 +92,7 @@ namespace Coldairarrow.Business.Base_Manage
         }
 
 
-        public async Task<object> GetDataListAsyncByDepartment(string departmentid)
+        public async Task<object> GetDataListByDepartmentAsync(string departmentid)
         {
             var departments = await _departmentBusiness.GetIQueryable().Where(p => p.ParentIds.Contains(departmentid)).Select(p => p.Id).ToListAsync();
             departments.Add(departmentid);

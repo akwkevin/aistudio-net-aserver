@@ -15,12 +15,16 @@ namespace Coldairarrow.Entity.D_Manage
     public class D_UserMail : MessageBaseEntity
     {
         public string Title { get; set; }   
-        public int Type { get; set; }
+        public UserMailType Type { get; set; }
         public string CCIds { get; set; }
         public string CCNames { get; set; }
         public string ReadingMarks { get; set; }
         public bool StarMark { get; set; }
         public string Appendix { get; set; }
-        public bool IsDraft { get; set; }
+
+        /// <summary>
+        /// 状态 =0草稿中，=1已发布，=2撤回
+        /// </summary>
+        public EmailStatus Status { get; set; }
     }
 }

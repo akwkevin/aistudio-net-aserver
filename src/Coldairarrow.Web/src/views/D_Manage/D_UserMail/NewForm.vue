@@ -136,7 +136,7 @@ export default {
         this.entity.UserIds = '^' + this.tags.join('^') + '^'
         this.entity.Avatar = this.userInfo.Avatar
         this.entity.Appendix = this.appendix
-        this.entity.IsDraft = isDraft
+        this.entity.Status = isDraft ? 0 : 1
 
         this.loading = true
         this.$http.post('/D_Manage/D_UserMail/SaveData', this.entity).then((resJson) => {

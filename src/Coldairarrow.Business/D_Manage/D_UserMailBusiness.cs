@@ -48,7 +48,7 @@ namespace Coldairarrow.Business.D_Manage
             {
                 where = where.And(p => p.CreatorId.Contains(input.Search.creatorId));
             }
-            where = where.And(p => p.IsDraft == input.Search.draft);
+            where = where.And(p => (int)p.Status == input.Search.status);
 
             return await q.Where(where).GetPageResultAsync(input);
         }
@@ -112,7 +112,7 @@ namespace Coldairarrow.Business.D_Manage
             {
                 where = where.And(p => p.CreatorId.Contains(input.Search.creatorId));
             }
-            where = where.And(p => p.IsDraft == input.Search.draft);
+            where = where.And(p => (int)p.Status == input.Search.status);
 
             var count = await GetHistoryDataCount(where, input.Search.start, input.Search.end, "CreateTime");
 
@@ -141,7 +141,7 @@ namespace Coldairarrow.Business.D_Manage
             {
                 where = where.And(p => p.CreatorId.Contains(input.Search.creatorId));
             }
-            where = where.And(p => p.IsDraft == input.Search.draft);
+            where = where.And(p => (int)p.Status == input.Search.status);
 
             var dataList = await GetHistoryDataQueryable(where, input.Search.start, input.Search.end, "CreateTime").ProjectTo<D_UserMailDTO>(_mapper.ConfigurationProvider).ToListAsync();
 
@@ -170,7 +170,7 @@ namespace Coldairarrow.Business.D_Manage
             {
                 where = where.And(p => p.CreatorId.Contains(input.Search.creatorId));
             }
-            where = where.And(p => p.IsDraft == input.Search.draft);
+            where = where.And(p => (int)p.Status == input.Search.status);
 
             var dataList = await GetHistoryDataQueryable(where, input.Search.start, input.Search.end, "CreateTime").ProjectTo<D_UserMailDTO>(_mapper.ConfigurationProvider).GetPageResultAsync(input);
             dataList.Data.ForEach(async p =>

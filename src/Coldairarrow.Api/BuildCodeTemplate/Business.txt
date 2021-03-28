@@ -26,10 +26,10 @@ namespace Coldairarrow.Business.%areaName%
             var search = input.Search;
 
             //筛选
-            if (!search.Condition.IsNullOrEmpty() && !search.Keyword.IsNullOrEmpty())
+            if (!search.condition.IsNullOrEmpty() && !search.keyword.IsNullOrEmpty())
             {
                 var newWhere = DynamicExpressionParser.ParseLambda<%entityName%, bool>(
-                    ParsingConfig.Default, false, $@"{search.Condition}.Contains(@0)", search.Keyword);
+                    ParsingConfig.Default, false, $@"{search.condition}.Contains(@0)", search.keyword);
                 where = where.And(newWhere);
             }
 

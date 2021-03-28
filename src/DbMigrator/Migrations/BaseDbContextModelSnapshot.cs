@@ -541,6 +541,135 @@ namespace DbMigrator.Migrations
                     b.ToTable("Base_UserRole");
                 });
 
+            modelBuilder.Entity("Coldairarrow.Entity.D_Manage.D_Notice", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("自然主键");
+
+                    b.Property<string>("AnyId")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Mode=0，对应ALL,Mode=1,对应用户Id,Mode=2,对应角色Id，Mode=3，对应部门Id");
+
+                    b.Property<string>("Appendix")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("附件");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2")
+                        .HasComment("创建时间");
+
+                    b.Property<string>("CreatorId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("创建人Id");
+
+                    b.Property<string>("CreatorName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasComment("创建人");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit")
+                        .HasComment("否已删除");
+
+                    b.Property<int>("Mode")
+                        .HasColumnType("int")
+                        .HasComment("类型=0，全部，=1，发给指定用户，=2，发给指定角色，=3，发给指定部门");
+
+                    b.Property<string>("ModifyId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("修改人Id");
+
+                    b.Property<string>("ModifyName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasComment("修改人");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2")
+                        .HasComment("修改时间");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasComment("状态 =0草稿中，=1已发布，=2撤回");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("租户Id");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("内容");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("标题");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasComment("类型=0，通告");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("D_Notice");
+                });
+
+            modelBuilder.Entity("Coldairarrow.Entity.D_Manage.D_NoticeReadingMarks", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("自然主键");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2")
+                        .HasComment("创建时间");
+
+                    b.Property<string>("CreatorId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("创建人Id");
+
+                    b.Property<string>("CreatorName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasComment("创建人");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit")
+                        .HasComment("否已删除");
+
+                    b.Property<string>("ModifyId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("修改人Id");
+
+                    b.Property<string>("ModifyName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasComment("修改人");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2")
+                        .HasComment("修改时间");
+
+                    b.Property<string>("NoticeId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("租户Id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("D_NoticeReadingMarks");
+                });
+
             modelBuilder.Entity("Coldairarrow.Entity.D_Manage.D_UserGroup", b =>
                 {
                     b.Property<string>("Id")
@@ -657,9 +786,6 @@ namespace DbMigrator.Migrations
                         .HasColumnType("bit")
                         .HasComment("否已删除");
 
-                    b.Property<bool>("IsDraft")
-                        .HasColumnType("bit");
-
                     b.Property<string>("ModifyId")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
@@ -679,6 +805,10 @@ namespace DbMigrator.Migrations
 
                     b.Property<bool>("StarMark")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasComment("状态 =0草稿中，=1已发布，=2撤回");
 
                     b.Property<string>("TenantId")
                         .HasMaxLength(50)
@@ -752,6 +882,10 @@ namespace DbMigrator.Migrations
 
                     b.Property<string>("ReadingMarks")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasComment("状态 =0草稿中，=1已发送，=2废弃撤回，=3发送失败");
 
                     b.Property<string>("TenantId")
                         .HasMaxLength(50)

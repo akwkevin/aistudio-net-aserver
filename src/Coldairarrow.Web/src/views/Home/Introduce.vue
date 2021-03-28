@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false">
     <div>
-      <p>本框架为.NET Core3.0+Wpf（CS-重点）/Ant Design Vue版（此处不在介绍）</p>
+      <p>本框架为.NET Core5.0+Wpf（CS-重点）/Ant Design Vue版（此处不在介绍）/Vant(手机端-稍微介绍下) </p>
       <p>本框架旨在极大的提高开发效率</p>
       <p>
         使用技术栈：<br />
@@ -34,9 +34,14 @@
         <br />
         相关链接:<br />
         本框架链接,欢迎点星支持:<a
-          href="https://gitee.com/akwkevin/AClient"
+          href="https://gitee.com/akwkevin/aistudio.-wpf.-aclient"
           target="_blank"
-        >https://gitee.com/akwkevin/AClient</a
+        >https://gitee.com/akwkevin/aistudio.-wpf.-aclient</a
+        ><br />
+        本框架Vue链接,欢迎点星支持:<a
+          href="https://gitee.com/akwkevin/aistudio.-vue.-aclient"
+          target="_blank"
+        >https://gitee.com/akwkevin/aistudio.-vue.-aclient</a
         ><br />
         个人gitee,欢迎点星支持:<a
           href="https://gitee.com/akwkevin"

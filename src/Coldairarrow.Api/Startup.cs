@@ -6,13 +6,16 @@ using EFCore.Sharding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using NSwag;
 using Quartz;
 using Quartz.Impl;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Coldairarrow.Api
@@ -95,6 +98,8 @@ namespace Coldairarrow.Api
             InitData(app.ApplicationServices);//初始化数据，astudio edit
             ServiceLocator.Instance = app.ApplicationServices;
 
+            InitFileServer(app);
+
             if (_configuration.GetSection("UseWebSocket").Get<bool>() == true)
             {
                 var webSocketOptions = new WebSocketOptions()
@@ -126,6 +131,55 @@ namespace Coldairarrow.Api
             {    
                 SeedData.EnsureSeedData(serviceScope.ServiceProvider);
             }
+        }
+
+        private void InitFileServer(IApplicationBuilder app)
+        {
+            //app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images")),
+                RequestPath = "/images",
+            });
+
+            app.UseDirectoryBrowser(new DirectoryBrowserOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images")),
+                RequestPath = "/images",
+            });
+
+            var provider = new FileExtensionContentTypeProvider();
+            //provider.Mappings.Add(".exe", "application/x-msdownload");
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Setup")),
+                RequestPath = "/setup",
+                ContentTypeProvider = provider,
+            });
+
+            app.UseDirectoryBrowser(new DirectoryBrowserOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Setup")),
+                RequestPath = "/setup",
+            });
+
+
+
+            //手动设置MIME Type,或者设置一个默认值， 以解决某些文件MIME Type文件识别不到，出现404错误
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Update")),
+                RequestPath = "/update",
+                ServeUnknownFileTypes = true,
+                DefaultContentType = "application/x-msdownload",//设置默认MIME Type
+
+            });
+
+            app.UseDirectoryBrowser(new DirectoryBrowserOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Update")),
+                RequestPath = "/update",
+            });
         }
     }
 }

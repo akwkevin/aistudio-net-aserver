@@ -29,7 +29,7 @@ namespace Coldairarrow.Business.D_Manage
         public string creatorId { get; set; }
         public string userId { get; set; }
 
-        public bool draft { get; set; }
+        public int status { get; set; }
 
         public DateTime? start { get; set; }
         public DateTime? end { get; set; }

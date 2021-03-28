@@ -1,5 +1,6 @@
 ﻿using AIStudio.Service;
 using Coldairarrow.Business.D_Manage;
+using Coldairarrow.Entity;
 using Coldairarrow.Entity.D_Manage;
 using Coldairarrow.Util;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,7 @@ namespace AIStudio.Service.WebSocketEx
                     Text = anyText,
                     CreatorId = "system",
                     CreatorName = "system",
-                    Type = 1,
+                    Type = UserMessageType.Text,
                 },
                 MessageType = WSMessageType.Success,
             };
@@ -88,7 +89,7 @@ namespace AIStudio.Service.WebSocketEx
                                 UserNames = "^" + userWebSocket.UserName + "^",
                                 Avatar = wsFactory.GetSmallAssistant().Avatar,
                                 Role = "Sender",
-                                Type = 1,
+                                Type = UserMessageType.Text,
                             };
                         }
                     }

@@ -86,7 +86,7 @@
             <p>{{ item.UserNames | filterReplaceName }}</p>
           </div>
           <div class="list-content-item">
-            <p>{{ item.CreateTime }}</p>
+            <p>{{ item.CreateTime | moment }}</p>
           </div>
         </div>
       </a-list-item>
@@ -154,7 +154,7 @@ export default {
       this.selectedRowKeys = []
       this.queryParam.userId = this.type === '1' ? this.userInfo.Id : ''
       this.queryParam.creatorId = this.type === '2' || this.type === '3' ? this.userInfo.Id : ''
-      this.queryParam.draft = this.type === '3'
+      this.queryParam.status = this.type === '3' ? 0 : 1
 
       this.loading = true
       this.$http

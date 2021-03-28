@@ -147,7 +147,7 @@ export default {
     setavatar (url) {
       this.avatar = url
     },
-    handleSubmit (isDraft) {
+    handleSubmit () {
       if (this.tags.length === 0) {
         this.$message.error('群组成员为空')
         return
