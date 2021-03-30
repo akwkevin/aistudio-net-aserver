@@ -7,15 +7,47 @@
     :getPopupContainer="() => $refs.noticeRef.parentElement"
     :autoAdjustOverflow="true"
     :arrowPointAtCenter="true"
-    :overlayStyle="{ width: '300px', top: '50px' }"
+    :overlayStyle="{ width: '360px', top: '50px' }"
   >
     <template slot="content">
       <a-spin :spinning="loadding">
         <a-tabs v-model="activeKey" @tabClick="ontabClick" :tabBarGutter="0">
+          <a-tab-pane key="0">
+            <span slot="tab">
+              <a-icon type="sound" />
+              <a-badge :count="pagination0.total" :overflow-count="99" :offset="[6, -3]">通告</a-badge>
+            </span>
+            <a-list>
+              <a-list-item
+                :key="index"
+                v-for="(item, index) in data0"
+                @click="selectData0(item.Id)"
+              >
+                <a-list-item-meta :title="item.Title" :description="item.CreateTime">
+                  <a-tooltip slot="avatar">
+                    <template slot="title">
+                      {{ item.CreatorName }}
+                    </template>
+                    <a-avatar
+                      style="background-color: white;"
+                      :src="item.Avatar | AvatarFilter"
+                    />
+                  </a-tooltip>
+                </a-list-item-meta>
+              </a-list-item>
+              <div slot="footer">
+                <router-link
+                  style="float: right;"
+                  @click.native="closeNotice"
+                  :to="{ path: '/D_Manage/D_Notice/List' }"
+                >查看更多</router-link>
+              </div>
+            </a-list>
+          </a-tab-pane>
           <a-tab-pane key="1">
             <span slot="tab">
               <a-icon type="mail" />
-              <a-badge :count="pagination1.total" :overflow-count="99" :offset="[6, -3]">通知</a-badge>
+              <a-badge :count="pagination1.total" :overflow-count="99" :offset="[6, -3]">信件</a-badge>
             </span>
             <a-list>
               <a-list-item
@@ -115,6 +147,7 @@
       <a-badge :count="totalcount">
         <a-icon style="font-size: 16px; padding: 4px;" type="bell" />
       </a-badge>
+      <edit-form0 ref="editForm0" :parentObj="this"></edit-form0>
       <edit-form1 ref="editForm1" :parentObj="this"></edit-form1>
       <edit-form2 ref="editForm2" :parentObj="this"></edit-form2>
       <edit-form3 ref="editForm3" :parentObj="this"></edit-form3>
@@ -124,7 +157,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { formatDate } from '@/utils/util'
+import EditForm0 from '@/views/D_Manage/D_Notice/EditForm'
 import EditForm1 from '@/views/D_Manage/D_UserMail/EditForm'
 import EditForm2 from '@/views/D_Manage/D_UserMessage/ChatForm'
 import EditForm3 from '@/views/OA_Manage/OA_UserForm/EditForm'
@@ -133,6 +166,7 @@ var messageType = 5
 export default {
   name: 'HeaderNotice',
   components: {
+    EditForm0,
     EditForm1,
     EditForm2,
     EditForm3
@@ -141,10 +175,16 @@ export default {
     return {
       loadding: false,
       visible: false,
-      activeKey: '1',
+      activeKey: '0',
+      data0: [],
       data1: [],
       data2: [],
       data3: [],
+      pagination0: {
+        current: 1,
+        pageSize: 5,
+        total: 0
+      },
       pagination1: {
         current: 1,
         pageSize: 5,
@@ -179,6 +219,29 @@ export default {
       // setTimeout(() => {
       //   this.loadding = false
       // }, 1000)
+      if (this.activeKey === '0') {
+        var queryParam0 = {
+          userId: this.userInfo.Id,
+          markflag: true
+        }
+
+        this.$http
+          .post('/D_Manage/D_Notice/GetPageHistoryDataList', {
+            PageIndex: this.pagination0.current,
+            PageRows: this.pagination0.pageSize,
+            SortField: this.sorter.field || 'Id',
+            SortType: this.sorter.order,
+            Search: queryParam0
+          })
+          .then(resJson => {
+            this.loadding = false
+            this.data0 = resJson.Data
+            const pagination = { ...this.pagination0 }
+            pagination.total = resJson.Total || 0
+            this.pagination0 = pagination
+            this.totalcount = this.pagination0.total + this.pagination1.total + this.pagination2.total + this.pagination3.total
+          })
+      }
       if (this.activeKey === '1') {
         var queryParam1 = {
           userId: this.userInfo.Id,
@@ -199,7 +262,7 @@ export default {
             const pagination = { ...this.pagination1 }
             pagination.total = resJson.Total || 0
             this.pagination1 = pagination
-            this.totalcount = this.pagination1.total + this.pagination2.total + this.pagination3.total
+            this.totalcount = this.pagination0.total + this.pagination1.total + this.pagination2.total + this.pagination3.total
           })
       } else if (this.activeKey === '2') {
         var queryParam2 = {
@@ -220,7 +283,7 @@ export default {
             const pagination = { ...this.pagination2 }
             pagination.total = resJson.Total || 0
             this.pagination2 = pagination
-            this.totalcount = this.pagination1.total + this.pagination2.total + this.pagination3.total
+            this.totalcount = this.pagination0.total + this.pagination1.total + this.pagination2.total + this.pagination3.total
           })
       } else if (this.activeKey === '3') {
         var queryParam3 = {
@@ -240,7 +303,7 @@ export default {
             const pagination = { ...this.pagination3 }
             pagination.total = resJson.Total || 0
             this.pagination3 = pagination
-            this.totalcount = this.pagination1.total + this.pagination2.total + this.pagination3.total
+            this.totalcount = this.pagination0.total + this.pagination1.total + this.pagination2.total + this.pagination3.total
           })
       }
     },
@@ -259,6 +322,9 @@ export default {
     closeNotice () {
       this.visible = false
     },
+    selectData0 (id) {
+      this.$refs.editForm0.openForm(id)
+    },
     selectData1 (id) {
       this.$refs.editForm1.openForm(id)
     },
@@ -272,10 +338,11 @@ export default {
     getConfigResult (res) {
       // 接收回调函数返回数据的方法
       const resmsg = res
+      this.pagination0.total = resmsg.NoticeCount
       this.pagination1.total = resmsg.UserMailCount
       this.pagination2.total = resmsg.UserMessageCount
       this.pagination3.total = resmsg.UserFormCount
-      this.totalcount = this.pagination1.total + this.pagination2.total + this.pagination3.total
+      this.totalcount = this.pagination0.total + this.pagination1.total + this.pagination2.total + this.pagination3.total
       const clearcache = resmsg.Clearcache
 
       if (clearcache.indexOf('Base_User') !== -1) {

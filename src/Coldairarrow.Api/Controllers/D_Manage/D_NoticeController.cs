@@ -1,4 +1,5 @@
 ﻿using Coldairarrow.Business.D_Manage;
+using Coldairarrow.Entity;
 using Coldairarrow.Entity.D_Manage;
 using Coldairarrow.Util;
 using Microsoft.AspNetCore.Mvc;
@@ -24,16 +25,35 @@ namespace Coldairarrow.Api.Controllers.D_Manage
 
         #region 获取
 
-       [HttpPost]
+        [HttpPost]
         public async Task<PageResult<D_NoticeDTO>> GetDataList(PageInput<D_NoticeInputDTO> input)
         {
             return await _d_NoticeBus.GetDataListAsync(input);
         }
 
+        /// <summary>
+        /// 获取列表，历史分页
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<D_Notice> GetTheData(IdInputDTO input)
+        public async Task<PageResult<D_NoticeDTO>> GetPageHistoryDataList(PageInput<D_NoticeInputDTO> input)
         {
-            return await _d_NoticeBus.GetTheDataAsync(input.id);
+            var dataList = await _d_NoticeBus.GetPageHistoryDataListAsync(input);
+
+            return dataList;
+        }
+
+        [HttpPost]
+        public async Task<D_NoticeDTO> GetTheData(IdInputDTO input)
+        {            
+            var data = await _d_NoticeBus.GetTheDataAsync(input.id);
+
+            //插入已读标记
+            if (string.IsNullOrEmpty(data.UserId) && data.Status == NoticeStatus.Published)
+                await AddReadingMark(data);
+
+            return data;
         }
 
         #endregion

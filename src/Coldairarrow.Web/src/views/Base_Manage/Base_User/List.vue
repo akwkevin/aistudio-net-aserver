@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-operator">
       <a-row :gutter="48">
-        <a-col :lg="15" :md="12" :sm="24">
+        <a-col :lg="17" :md="12" :sm="24">
           <a-button v-if="hasPerm('Base_User.Add')" type="primary" icon="plus" @click="hanldleAdd()">新建</a-button>
           <a-button
             v-if="hasPerm('Base_User.Delete')"
@@ -13,7 +13,7 @@
             :loading="loading"
           >删除</a-button>
         </a-col>
-        <a-col :lg="9" :md="12" :sm="24">
+        <a-col :lg="7" :md="12" :sm="24">
           <a-input-search
             allow-clear
             v-model="queryParam.keyword"

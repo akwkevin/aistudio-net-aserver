@@ -104,6 +104,11 @@ namespace AIStudio.Service.Quartz
             {
                 quene.EnQueen("PushMessageTypes", ids.Distinct().ToArray());
             }
+
+            //if (GlobalData.PushMessageTypes.Contains(typeof(T)) && !GlobalData.BatchSaveTypes.Contains(typeof(T)))
+            //{
+            //    SaveMessageJob.EnPushMessageQueen(entity);
+            //}
         }
     }
 

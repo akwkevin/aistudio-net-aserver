@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Coldairarrow.Util;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Coldairarrow.Entity.D_Manage
     /// <summary>
     /// 通告
     /// </summary>
+    [PushMessageType]
     [Table("D_Notice")]
     public class D_Notice: BaseEntity
     {

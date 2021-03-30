@@ -1,37 +1,36 @@
 ﻿<template>
   <a-card :bordered="false">
     <div class="table-operator">
-      <a-radio-group button-style="solid" v-model="status" @change="getDataList">
-        <a-radio-button value="processing">未读</a-radio-button>
-        <a-radio-button value="finish">已读</a-radio-button>
-        <a-radio-button value="all">全部</a-radio-button>
-      </a-radio-group>
+      <a-row :gutter="5">
+        <a-col :lg="17" :md="12" :sm="24">
+          <a-radio-group button-style="solid" v-model="status" @change="getDataList">
+            <a-radio-button value="processing">未读</a-radio-button>
+            <a-radio-button value="finish">已读</a-radio-button>
+            <a-radio-button value="all">全部</a-radio-button>
+          </a-radio-group>
 
-      <a-button type="primary" icon="plus" @click="hanldleAdd()">新建</a-button>
-      <a-button
-        type="primary"
-        icon="minus"
-        @click="handleDelete(selectedRowKeys)"
-        :disabled="!hasSelected()"
-        :loading="loading"
-      >删除</a-button>
-      <a-button type="primary" icon="redo" @click="getDataList()">刷新</a-button>
-    </div>
+          <a-button style="margin-left: 8px" type="primary" icon="plus" @click="hanldleAdd()">新建</a-button>
+          <a-button
+            type="primary"
+            icon="minus"
+            @click="handleDelete(selectedRowKeys)"
+            :disabled="!hasSelected()"
+            :loading="loading"
+          >删除</a-button>
+          <a-button type="primary" icon="redo" @click="getDataList()">刷新</a-button>
+        </a-col>
 
-    <div class="table-page-search-wrapper">
-      <a-form layout="inline">
-        <a-row :gutter="10">
-          <a-col :md="4" :sm="24">
-            <a-form-item>
-              <a-input v-model="queryParam.keyword" placeholder="关键字" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="24">
-            <a-button type="primary" @click="() => {this.pagination.current = 1; this.getDataList()}">查询</a-button>
-            <a-button style="margin-left: 8px" @click="() => (queryParam = {})">重置</a-button>
-          </a-col>
-        </a-row>
-      </a-form>
+        <a-col :lg="7" :md="12" :sm="24">
+          <a-input-search
+            allow-clear
+            v-model="queryParam.keyword"
+            placeholder="关键字"
+            enter-button="Search"
+            @search="
+              () => {this.pagination.current = 1; this.getDataList()}"
+          />
+        </a-col>
+      </a-row>
     </div>
 
     <a-table
@@ -61,7 +60,7 @@
     </a-table>
 
     <edit-form ref="editForm" :parentObj="this"></edit-form>
-  </a-card>
+    </a-row></a-card>
 </template>
 
 <script>
@@ -115,8 +114,6 @@ export default {
     getDataList () {
       this.selectedRowKeys = []
       this.queryParam.userId = this.userInfo.Id
-      this.queryParam.roleId = this.userInfo.RoleId
-      this.queryParam.departmentId = this.userInfo.DepartmentId
       if (this.status === 'processing') {
         this.queryParam.status = 0
       } else if (this.status === 'finish') {

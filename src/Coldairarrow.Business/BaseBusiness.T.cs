@@ -79,8 +79,10 @@ namespace Coldairarrow.Business
         /// </summary>
         /// <param name="entity">实体对象</param>
         public async Task<int> InsertAsync(T entity)
-        {
-            return await Db.InsertAsync(entity);
+        {           
+            int count = await Db.InsertAsync(entity);
+
+            return count;
         }
 
         /// <summary>

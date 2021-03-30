@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-operator">
       <a-row :gutter="5">
-        <a-col :lg="11" :md="12" :sm="24">
+        <a-col :lg="14" :md="12" :sm="24">
           <a-radio-group button-style="solid" v-model="status" @change="getDataList">
             <a-radio-button value="processing">待审批</a-radio-button>
             <a-radio-button value="waiting">等待中</a-radio-button>
@@ -11,7 +11,7 @@
             <a-radio-button value="all">全部</a-radio-button>
           </a-radio-group>
         </a-col>
-        <a-col :lg="5" :md="5" :sm="24">
+        <a-col :lg="3" :md="5" :sm="24">
           <a-select
             style="width:100%"
             allowClear
@@ -24,13 +24,14 @@
             <a-select-option key="UserNames">审批人</a-select-option>
           </a-select>
         </a-col>
-        <a-col :lg="8" :md="7" :sm="24">
+        <a-col :lg="7" :md="7" :sm="24">
           <a-input-search
             allow-clear
             v-model="queryParam.keyword"
             placeholder="关键字"
             enter-button="Search"
-            @search="getDataList"
+            @search="
+              () => {this.pagination.current = 1; this.getDataList()}"
           />
         </a-col>
       </a-row>

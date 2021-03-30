@@ -230,6 +230,8 @@ namespace Coldairarrow.Business.OA_Manage
 
             return dataList;
         }
+
+        [Transactional]
         public async Task<PageResult<OA_UserFormDTO>> GetPageHistoryDataListAsync(PageInput<OA_UserFormInputDTO> input)
         {   
             var where = LinqHelper.True<OA_UserForm>();

@@ -36,16 +36,20 @@
             <a-radio :value="2">
               按角色
             </a-radio>
-            <a-radio :value="3">
+            <a-radio :value="3" disabled>
               按部门
             </a-radio>
           </a-radio-group>
         </a-form-item>
-        <a-form-item label="收件人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-select mode="tags" style="width: 100%" v-model="tags">
+        <a-form-item v-if="mode === 1" label="通告人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select mode="tags" style="width: 100%" v-model="users">
             <a-select-option v-for="d in useroption" :key="d.value" >{{ d.text }}</a-select-option>
           </a-select>
-
+        </a-form-item>
+        <a-form-item v-if="mode === 2" label="通告角色" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select mode="tags" style="width: 100%" v-model="roles">
+            <a-select-option v-for="d in roleoption" :key="d.value" >{{ d.text }}</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="主题" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-model="etitle" />
@@ -89,10 +93,13 @@ export default {
       width: '60%',
       disabled: false,
       mode: 0,
-      tags: [],
+      users: [],
+      roles: [],
       tagInputVisible: false,
       tagInputValue: '',
       useroption: [],
+      roleoption: [],
+      departmentoption: [],
       etitle: '',
       editorData: '',
       appendix: '',
@@ -103,6 +110,9 @@ export default {
     this.GetAllUser().then((res) => {
       this.useroption = res
     })
+    this.GetAllRole().then((res) => {
+      this.roleoption = res
+    })
   },
   computed: {
     ...mapGetters(['userInfo']),
@@ -111,7 +121,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['GetAllUser']),
+    ...mapActions(['GetAllUser', 'GetAllRole']),
     openForm (id, title) {
       // 参数赋值
       this.title = title || '编辑表单'
@@ -126,7 +136,10 @@ export default {
           this.$http.post('/D_Manage/D_Notice/GetTheData', { id: id }).then((resJson) => {
             this.entity = resJson.Data
             if (this.entity.AnyId && this.entity.mode === 1) {
-              this.tags = this.entity.AnyId.slice(1, -1).split('^')
+              this.users = this.entity.AnyId.slice(1, -1).split('^')
+            }
+            if (this.entity.AnyId && this.entity.mode === 2) {
+              this.roles = this.entity.AnyId.slice(1, -1).split('^')
             }
             this.mode = this.entity.Mode
             this.etitle = this.entity.Title
@@ -146,12 +159,16 @@ export default {
       this.editorData = ' '
       this.etitle = ''
       this.appendix = ''
-      this.tags = []
+      this.users = []
       this.disabled = false
     },
     handleSubmit (isDraft) {
-      if (this.tags.length === 0) {
-        this.$message.error('收件人为空')
+      if (this.mode === 1 && this.users.length === 0) {
+        this.$message.error('通告人为空')
+        return
+      }
+      if (this.mode === 2 && this.roles.length === 0) {
+        this.$message.error('通告角色为空')
         return
       }
       if (this.etitle === '') {
@@ -162,49 +179,38 @@ export default {
         this.$message.error('正文为空')
         return
       }
-      const userNames = []
-      let error = false
-      this.tags.forEach((item) => {
-        const tempuser = this.useroption.find((d) => d.value === item)
-        if (tempuser !== null && typeof tempuser !== 'undefined') {
-          userNames.push(tempuser.text)
+
+      this.entity.Mode = this.mode
+      this.entity.Text = this.editorData
+      this.entity.Title = this.etitle
+      if (this.mode === 1) {
+        this.entity.AnyId = '^' + this.users.join('^') + '^'
+      } else if (this.mode === 2) {
+        this.entity.AnyId = '^' + this.roles.join('^') + '^'
+      }
+      this.entity.Appendix = this.appendix
+      this.entity.Status = isDraft ? 0 : 1
+
+      this.loading = true
+      this.$http.post('/D_Manage/D_Notice/SaveData', this.entity).then((resJson) => {
+        this.loading = false
+
+        if (resJson.Success) {
+          this.$message.success('操作成功!')
+          this.visible = false
+          this.editorData = ' '
+          this.parentObj.getDataList()
         } else {
-          this.$message.error('存在未知的收件人:' + item)
-          error = true
-          return true
+          this.$message.error(resJson.Msg)
         }
       })
-      if (!error) {
-        this.entity.Mode = this.mode
-        this.entity.Text = this.editorData
-        this.entity.Title = this.etitle
-        this.entity.UserNames = '^' + userNames.join('^') + '^'
-        this.entity.UserIds = '^' + this.tags.join('^') + '^'
-        this.entity.Avatar = this.userInfo.Avatar
-        this.entity.Appendix = this.appendix
-        this.entity.Status = isDraft ? 0 : 1
-
-        this.loading = true
-        this.$http.post('/D_Manage/D_Notice/SaveData', this.entity).then((resJson) => {
-          this.loading = false
-
-          if (resJson.Success) {
-            this.$message.success('操作成功!')
-            this.visible = false
-            this.editorData = ' '
-            this.parentObj.getDataList()
-          } else {
-            this.$message.error(resJson.Msg)
-          }
-        })
-      }
     },
     handleCancel () {
       this.visible = false
       this.editorData = ' '
       this.appendix = ''
-      if (this.entity.Id > 0 && (this.entity.ReadingMarks || '').indexOf(this.userInfo.Id) >= 0) {
-        this.parentObj.setDataRead(this.entity.Id)
+      if (!this.entity.UserId) {
+        this.parentObj.getDataList()
       }
     }
   }

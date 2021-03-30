@@ -25,6 +25,7 @@ namespace AIStudio.Service.Quartz
         ICustomWebSocketFactory _wsFactory { get { return ServiceLocator.Instance.GetRequiredService<ICustomWebSocketFactory>(); } }
         ID_UserMessageBusiness _userMessageBusiness { get { return ServiceLocator.Instance.GetRequiredService<ID_UserMessageBusiness>(); } }
         ID_UserMailBusiness _userMailBusiness { get { return ServiceLocator.Instance.GetRequiredService<ID_UserMailBusiness>(); } }
+        ID_NoticeBusiness _noticeBusiness { get { return ServiceLocator.Instance.GetRequiredService<ID_NoticeBusiness>(); } }
         IOA_UserFormBusiness _userFormBusiness { get { return ServiceLocator.Instance.GetRequiredService<IOA_UserFormBusiness>(); } }
         IDistributedCache _distributed { get { return ServiceLocator.Instance.GetRequiredService<IDistributedCache>(); } }
 
@@ -81,6 +82,15 @@ namespace AIStudio.Service.Quartz
                                 userId = customWebSocket.UserId,
                             }
                         }).Result;
+
+                        var result4 = _noticeBusiness.GetHistoryDataCountAsync(new Input<D_NoticeInputDTO>()
+                        {
+                            Search = new D_NoticeInputDTO()
+                            {
+                                userId = customWebSocket.UserId,
+                                markflag = true,
+                            }
+                        }).Result;
                         //查询并发送给客户端
                         var send = new MessageResult()
                         {
@@ -91,6 +101,7 @@ namespace AIStudio.Service.Quartz
                                 UserMessageCount = result1,
                                 UserMailCount = result2,
                                 UserFormCount = result3,
+                                NoticeCount = result4,
                             },
                             MessageType = WSMessageType.PushType
                         };

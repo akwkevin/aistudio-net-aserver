@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-operator">
       <a-row>
-        <a-col :lg="15" :md="12" :sm="24">
+        <a-col :lg="17" :md="12" :sm="24">
           <a-button type="primary" icon="plus" @click="hanldleAdd()">新建</a-button>
           <a-button icon="pause" @click="handlePause(selectedRowKeys)" :disabled="!hasSelected()">暂停</a-button>
           <a-button
@@ -30,7 +30,7 @@
           >删除</a-button>
           <a-button type="primary" icon="redo" @click="getDataList()">刷新</a-button>
         </a-col>
-        <a-col :lg="9" :md="12" :sm="24">
+        <a-col :lg="7" :md="12" :sm="24">
           <a-input-search
             allow-clear
             v-model="queryParam.keyword"

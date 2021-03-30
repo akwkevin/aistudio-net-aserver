@@ -36,9 +36,9 @@
           v-model="queryParam.keyword"
           placeholder="关键字"
           enter-button="Search"
-          @search="getDataList"
+          @search="
+            () => {this.pagination.current = 1; this.getDataList()}"
         />
-        <a-button style="margin-left: 8px" @click="() => (queryParam = {})">重置</a-button>
       </div>
     </div>
 
