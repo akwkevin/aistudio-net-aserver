@@ -10,8 +10,8 @@ namespace Demo.DbMigrator
     /// </summary>
     public class BaseDbContextFactory : IDesignTimeDbContextFactory<BaseDbContext>
     {
-        private static readonly string _connectionString = "Data Source=121.36.12.76;Initial Catalog=Colder.Admin.AntdVue;uid=sa;pwd=aic3600!";
-        //private static readonly string _connectionString = "Data Source=.;Initial Catalog=Colder.Admin.AntdVue;uid=sa;pwd=aic3600!";
+        //private static readonly string _connectionString = "Data Source=121.36.12.76;Initial Catalog=Colder.Admin.AntdVue;uid=sa;pwd=aic3600!";
+        private static readonly string _connectionString = "Data Source=.;Initial Catalog=Colder.Admin.AntdVue;uid=sa;pwd=aic3600!";
 
         private static readonly DatabaseType _databaseType = DatabaseType.SqlServer;
         static BaseDbContextFactory()
