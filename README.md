@@ -12,3 +12,5 @@ https://gitee.com/akwkevin/aistudio.-wpf.-aclient
 另外还实现了Vue手机客户端 https://gitee.com/akwkevin/aistudio.-vue.-aclient。
 
 最后非常感谢Colder.Admin.AntdVue的作者开源代码。
+
+网页客户端浏览地址http://121.36.12.76:5001/ （账号密码：Admin，Admin） 接口浏览地址http://121.36.12.76:5000/
