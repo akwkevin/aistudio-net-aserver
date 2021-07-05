@@ -26,7 +26,7 @@ namespace Coldairarrow.Business.Base_Manage
         public async Task<string> SubmitLoginAsync(LoginInputDTO input)
         {
             var password = input.password;
-            input.password = input.password.ToMD5String();
+            //input.password = input.password.ToMD5String();
             var theUser = await GetIQueryable()
                 .Where(x => x.UserName == input.userName && (x.Password == input.password || x.Password == password))
                 .FirstOrDefaultAsync();
