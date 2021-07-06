@@ -264,18 +264,19 @@ namespace Coldairarrow.Util
                 Type type = DbTypeStr_To_CsharpType(item.Type);
                 string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
                 string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
-                string newPropertyStr =
+            string newPropertyStr =
 $@"
         /// <summary>
         /// {description}
         /// </summary>{isKey}
+         [Description(""{description}"")]
         public {type.Name}{isNullable} {item.Name} {{ get; set; }}
 ";
                 properties += newPropertyStr;
             });
             string fileStr =
 $@"using System;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 {_extraUsingNamespace}
 namespace {nameSpace}
