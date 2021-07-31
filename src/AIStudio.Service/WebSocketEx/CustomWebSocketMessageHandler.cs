@@ -138,7 +138,7 @@ namespace AIStudio.Service.WebSocketEx
                 else if (message.MessageType == WSMessageType.PingType)
                 {
                     await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    _logger.LogDebug(UserLogType.WebSocket.ToEventId(), $"收到{userWebSocket.IP}的心跳包{message.Data}");
+                    //_logger.LogDebug(UserLogType.WebSocket.ToEventId(), $"收到{userWebSocket.IP}的心跳包{message.Data}");
                 }
             }
             catch (Exception ex)

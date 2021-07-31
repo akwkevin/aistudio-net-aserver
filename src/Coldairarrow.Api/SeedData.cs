@@ -219,6 +219,32 @@ namespace Coldairarrow.Api
             {
                 var quartz_TaskBusiness = provider.GetRequiredService<IQuartz_TaskBusiness>();
 
+                var resetDataJob = quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "ResetDataJob").Result;
+
+                if (resetDataJob == null)
+                {
+                    resetDataJob = new Quartz_Task()
+                    {
+                        Id = IdHelper.GetId(),
+                        TaskName = "ResetDataJob",
+                        GroupName = "SystemJob",
+                        Interval = "0 */5 * * * ?",
+                        ApiUrl = "ResetDataJob",
+                        RequestType = "System",
+                        Status = (int)TriggerState.Normal,
+                        ForbidEdit = true,
+                        CreateTime = DateTime.Now,
+                    };
+
+                    var result = quartz_TaskBusiness.InsertAsync(resetDataJob).Result;
+
+                    logger.LogDebug("resetDataJob created");
+                }
+                else
+                {
+                    logger.LogDebug("resetDataJob already exists");
+                }
+
                 var saveMessageJob = quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "SaveMessageJob").Result;
 
                 if (saveMessageJob == null)
