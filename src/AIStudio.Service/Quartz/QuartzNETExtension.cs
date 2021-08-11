@@ -175,8 +175,7 @@ namespace AIStudio.Service.Quartz
         /// 移除作业
         /// </summary>
         /// <param name="schedulerFactory"></param>
-        /// <param name="taskName"></param>
-        /// <param name="groupName"></param>
+        /// <param name="taskOptions"></param>
         /// <returns></returns>
         public static Task<object> Remove(this ISchedulerFactory schedulerFactory, Quartz_TaskDTO taskOptions)
         {
