@@ -22,12 +22,12 @@ namespace Coldairarrow.Api
     //astudio edit
     public class SeedData
     {
-        public static void EnsureSeedData(IServiceProvider provider)
+        public static async void EnsureSeedData(IServiceProvider provider)
         {
             var logger = provider.GetRequiredService<ILogger<SeedData>>();
 
             var roleBusiness = provider.GetRequiredService<IBase_RoleBusiness>();
-            var admin = roleBusiness.FirstOrDefaultAsync(p => p.RoleName == RoleTypes.部门管理员.ToString()).Result;
+            var admin = await roleBusiness.FirstOrDefaultAsync(p => p.RoleName == RoleTypes.部门管理员.ToString());
             if (admin == null)
             {
                 admin = new Base_Role
@@ -39,7 +39,7 @@ namespace Coldairarrow.Api
                 var result = roleBusiness.InsertAsync(admin).Result;
             }
 
-            var superadmin = roleBusiness.FirstOrDefaultAsync(p => p.RoleName == RoleTypes.超级管理员.ToString()).Result;
+            var superadmin = await roleBusiness.FirstOrDefaultAsync(p => p.RoleName == RoleTypes.超级管理员.ToString());
             if (superadmin == null)
             {
                 superadmin = new Base_Role
@@ -53,7 +53,7 @@ namespace Coldairarrow.Api
 
             var userBusiness = provider.GetRequiredService<IBase_UserBusiness>();
 
-            var adminUser = userBusiness.FirstOrDefaultAsync(p => p.UserName == "Admin").Result;
+            var adminUser = await userBusiness.FirstOrDefaultAsync(p => p.UserName == "Admin");
             if (adminUser == null)
             {
                 adminUser = new Base_User
@@ -64,7 +64,7 @@ namespace Coldairarrow.Api
                     CreateTime = DateTime.Now,
                 };
                 var result = userBusiness.InsertAsync(adminUser).Result;
-                userBusiness.SetUserRoleAsync(adminUser.Id, new List<string> { superadmin.Id }).Wait();
+                await userBusiness.SetUserRoleAsync(adminUser.Id, new List<string> { superadmin.Id });
 
                 logger.LogTrace("admin created");
             }
@@ -74,7 +74,7 @@ namespace Coldairarrow.Api
             }
 
             //alice ,123456,
-            var alice = userBusiness.FirstOrDefaultAsync(p => p.UserName == "alice").Result;
+            var alice = await userBusiness.FirstOrDefaultAsync(p => p.UserName == "alice");
             if (alice == null)
             {
                 alice = new Base_User
@@ -84,9 +84,9 @@ namespace Coldairarrow.Api
                     Password = "123456".ToMD5String(),
                     CreateTime = DateTime.Now,
                 };
-                var result = userBusiness.InsertAsync(alice).Result;
+                var result = await userBusiness.InsertAsync(alice);
 
-                userBusiness.SetUserRoleAsync(alice.Id, new List<string> { admin.Id }).Wait();
+                await userBusiness.SetUserRoleAsync(alice.Id, new List<string> { admin.Id });
 
                 logger.LogTrace("alice created");
             }
@@ -96,7 +96,7 @@ namespace Coldairarrow.Api
             }
 
             //bob ,123456,
-            var bob = userBusiness.FirstOrDefaultAsync(p => p.UserName == "bob").Result;
+            var bob = await userBusiness.FirstOrDefaultAsync(p => p.UserName == "bob");
             if (bob == null)
             {
                 bob = new Base_User
@@ -106,7 +106,7 @@ namespace Coldairarrow.Api
                     Password = "123456".ToMD5String(),
                     CreateTime = DateTime.Now,
                 };
-                var result = userBusiness.InsertAsync(bob).Result;
+                var result = await userBusiness.InsertAsync(bob);
 
                 logger.LogTrace("bob created");
             }
@@ -116,7 +116,7 @@ namespace Coldairarrow.Api
             }
 
             var actionBusiness = provider.GetRequiredService<IBase_ActionBusiness>();
-            var actionBusinesscount = actionBusiness.GetIQueryable().CountAsync().Result;
+            var actionBusinesscount = await actionBusiness.GetIQueryable().CountAsync();
             if (actionBusinesscount == 0)
             {
                 List<Base_Action> actions = new List<Base_Action>()
@@ -171,7 +171,7 @@ namespace Coldairarrow.Api
                          new Base_Action(){ Id="1193158266167758968",Deleted = false, ParentId="1193158266167758967", Type = ActionType.页面, Name="个人中心", Url="/account/center/Index",            Value=null,                    NeedAction=false,   Icon="user",           Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1193158266167758969",Deleted = false, ParentId="1193158266167758967", Type = ActionType.页面, Name="个人设置", Url="/account/settings/Index",          Value=null,                    NeedAction=false,   Icon="user",           Sort=1, CreateTime=DateTime.Now}, };
 
-                var result = actionBusiness.InsertAsync(actions).Result;
+                var result = await actionBusiness.InsertAsync(actions);
                 logger.LogTrace("action created");
             }
             else
@@ -180,7 +180,7 @@ namespace Coldairarrow.Api
             }
 
             var appSecretBussiness = provider.GetRequiredService<IBase_AppSecretBusiness>();
-            var appSecretcount = appSecretBussiness.GetIQueryable().CountAsync().Result;
+            var appSecretcount = await appSecretBussiness.GetIQueryable().CountAsync();
             if (appSecretcount == 0)
             {
                 List<Base_AppSecret> actions = new List<Base_AppSecret>()
@@ -194,7 +194,7 @@ namespace Coldairarrow.Api
             var dbOptions = configuration.GetSection("Database:BaseDb").Get<DatabaseOptions>();
 
             var dbLinkBusiness = provider.GetRequiredService<IBase_DbLinkBusiness>();
-            var baseDb = dbLinkBusiness.FirstOrDefaultAsync(p => p.LinkName == "BaseDb").Result;
+            var baseDb = await dbLinkBusiness.FirstOrDefaultAsync(p => p.LinkName == "BaseDb");
             if (baseDb == null)
             {
                 baseDb = new Base_DbLink()
@@ -206,7 +206,7 @@ namespace Coldairarrow.Api
                     CreateTime = DateTime.Now,
                 };
 
-                var result = dbLinkBusiness.InsertAsync(baseDb).Result;
+                var result = await dbLinkBusiness.InsertAsync(baseDb);
 
                 logger.LogTrace("baseDb created");
             }
@@ -236,7 +236,7 @@ namespace Coldairarrow.Api
                         CreateTime = DateTime.Now,
                     };
 
-                    var result = quartz_TaskBusiness.InsertAsync(resetDataJob).Result;
+                    var result = await quartz_TaskBusiness.InsertAsync(resetDataJob);
 
                     logger.LogDebug("resetDataJob created");
                 }
@@ -262,7 +262,7 @@ namespace Coldairarrow.Api
                         CreateTime = DateTime.Now,
                     };
 
-                    var result = quartz_TaskBusiness.InsertAsync(saveMessageJob).Result;
+                    var result = await quartz_TaskBusiness.InsertAsync(saveMessageJob);
 
                     logger.LogDebug("storeMessageJob created");
                 }
@@ -271,7 +271,7 @@ namespace Coldairarrow.Api
                     logger.LogDebug("storeMessageJob already exists");
                 }
 
-                var pushMessageJob = quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "PushMessageJob").Result;
+                var pushMessageJob = await quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "PushMessageJob");
 
                 if (pushMessageJob == null)
                 {
@@ -297,7 +297,7 @@ namespace Coldairarrow.Api
                     logger.LogDebug("pushMessageJob already exists");
                 }
 
-                var textJob = quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "GetLog").Result;
+                var textJob = await quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "GetLog");
 
                 if (textJob == null)
                 {
@@ -315,7 +315,7 @@ namespace Coldairarrow.Api
                         AuthValue = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJBZG1pbiIsImV4cCI6MTYxMzQ1NTI0MX0.XbnD6R0Ozgp1xoI6BUrRjYaHwRYYAJ7OgU6gRO1sdbA",
                     };
 
-                    var result = quartz_TaskBusiness.InsertAsync(textJob).Result;
+                    var result = await quartz_TaskBusiness.InsertAsync(textJob);
 
                     logger.LogDebug("textJob created");
                 }
@@ -330,7 +330,7 @@ namespace Coldairarrow.Api
             if (configuration.GetSection("UseWorkflow").Get<bool>() == true)
             {
                 var oA_DefTypeBusiness = provider.GetRequiredService<IOA_DefTypeBusiness>();
-                var defcount = oA_DefTypeBusiness.GetIQueryable().CountAsync().Result;
+                var defcount = await oA_DefTypeBusiness.GetIQueryable().CountAsync();
                 if (defcount == 0)
                 {
                     List<OA_DefType> defs = new List<OA_DefType>()
@@ -354,7 +354,7 @@ namespace Coldairarrow.Api
 
                         };
 
-                    var result = oA_DefTypeBusiness.InsertAsync(defs).Result;
+                    var result = await oA_DefTypeBusiness.InsertAsync(defs);
                     logger.LogDebug("oa_deftype created");
                 }
                 else
@@ -363,7 +363,7 @@ namespace Coldairarrow.Api
                 }
 
                 var oA_DefFormBusiness = provider.GetRequiredService<IOA_DefFormBusiness>();
-                var defformcount = oA_DefFormBusiness.GetIQueryable().CountAsync().Result;
+                var defformcount = await oA_DefFormBusiness.GetIQueryable().CountAsync();
                 if (defformcount == 0)
                 {
                     var directory = AppContext.BaseDirectory;
@@ -462,7 +462,7 @@ namespace Coldairarrow.Api
                         CreateTime = DateTime.Now,
                     };
                     defs.Add(def);
-                    var result = oA_DefFormBusiness.InsertAsync(defs).Result;
+                    var result = await oA_DefFormBusiness.InsertAsync(defs);
                     logger.LogDebug("oa_defform created");
                 }
                 else

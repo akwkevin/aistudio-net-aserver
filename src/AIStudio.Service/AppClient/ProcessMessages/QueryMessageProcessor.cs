@@ -108,11 +108,6 @@ namespace AIStudio.Service.AppClient.ProcessMessages
                     }
                 }
             }
-            //List<ValueTuple<string, object>> paramters = new List<(string, object)>()
-            //{
-            //    ValueTuple.Create<string, object>("@userId","Admin"),
-            //};
-            //var list = _userBus.GetListBySqlAsync("select * from Base_User where Id = @userId", paramters.ToArray()).Result;
             MethodInfo getAllBySql = business.GetType().GetMethod("GetListBySqlAsync");
             Task task = getAllBySql.Invoke(business, new Object[] { sql, paramters.ToArray() }) as Task;
             await task;

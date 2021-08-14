@@ -18,7 +18,7 @@ namespace AIStudio.Service.Quartz
     public class SaveMessageJob : IJob
     {
         IQuene _quene { get { return ServiceLocator.Instance.GetRequiredService<IQuene>(); } }
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             Quartz_TaskDTO taskOptions = context.GetTaskOptions();
             string message = "";
@@ -26,7 +26,6 @@ namespace AIStudio.Service.Quartz
             if (taskOptions == null)
             {
                 FileQuartz.WriteJobExecute(LogLevel.Warning, trigger.FullName, "未到找作业或可能被移除");
-                return Task.CompletedTask;
             }
 
             LogLevel logLevel = LogLevel.Information;
@@ -54,11 +53,11 @@ namespace AIStudio.Service.Quartz
 
                             MethodInfo insertListAsync = _bus.GetType().GetMethod("InsertAsync", new Type[] { listtype });
                             Task task = insertListAsync.Invoke(_bus, new Object[] { insertmessage }) as Task;
-                            task.Wait();
+                            await task;
 
                             MethodInfo updateListAsync = _bus.GetType().GetMethod("UpdateAsync", new Type[] { listtype });
                             Task task2 = updateListAsync.Invoke(_bus, new Object[] { updatemessgae }) as Task;
-                            task2.Wait();
+                            await task2;
 
 
                             updatecount += updatemessgae.Count;
@@ -85,7 +84,6 @@ namespace AIStudio.Service.Quartz
             }
 
             FileQuartz.WriteJobExecute(logLevel, trigger.FullName, message);
-            return Task.CompletedTask;
         }
 
         public static void EnPushMessageQueen(IQuene quene, params object[] entityBases)

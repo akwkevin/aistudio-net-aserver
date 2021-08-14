@@ -66,7 +66,7 @@ namespace Coldairarrow.Api
           
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //跨域
             app.UseCors(x =>
@@ -95,7 +95,7 @@ namespace Coldairarrow.Api
                 .UseSwaggerUi3()//添加Swagger UI到请求管道中(默认路由: /swagger).
                 ;
 
-            InitData(app.ApplicationServices);//初始化数据，astudio edit
+            //InitData(app.ApplicationServices);//初始化数据，astudio edit
             ServiceLocator.Instance = app.ApplicationServices;
 
             InitFileServer(app);
@@ -119,7 +119,7 @@ namespace Coldairarrow.Api
 
             if (_configuration.GetSection("UseWorkflow").Get<bool>() == true)
             {
-                app.UseWorkflow();
+                await app.UseWorkflow();
             }
         }
 

@@ -29,7 +29,7 @@ namespace AIStudio.Service.Quartz
         IOA_UserFormBusiness _userFormBusiness { get { return ServiceLocator.Instance.GetRequiredService<IOA_UserFormBusiness>(); } }
         IDistributedCache _distributed { get { return ServiceLocator.Instance.GetRequiredService<IDistributedCache>(); } }
 
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             Quartz_TaskDTO taskOptions = context.GetTaskOptions();
             string message = string.Empty;
@@ -37,7 +37,7 @@ namespace AIStudio.Service.Quartz
             if (taskOptions == null)
             {
                 FileQuartz.WriteJobExecute(LogLevel.Warning, trigger.FullName, "未到找作业或可能被移除");
-                return Task.CompletedTask;
+                return;
             }
 
             LogLevel logLevel = LogLevel.Information;
@@ -57,40 +57,40 @@ namespace AIStudio.Service.Quartz
                     {
                         customWebSocket.IsFirstPushed = true;
 
-                        var result1 = _userMessageBusiness.GetHistoryDataCountAsync(new Input<D_UserMessageInputDTO>()
+                        var result1 = await _userMessageBusiness.GetHistoryDataCountAsync(new Input<D_UserMessageInputDTO>()
                         {
                             Search = new D_UserMessageInputDTO()
                             {
                                 userId = customWebSocket.UserId,
                                 markflag = true,
                             }
-                        }).Result;
+                        });
 
-                        var result2 = _userMailBusiness.GetHistoryDataCountAsync(new Input<D_UserMailInputDTO>()
+                        var result2 = await _userMailBusiness.GetHistoryDataCountAsync(new Input<D_UserMailInputDTO>()
                         {
                             Search = new D_UserMailInputDTO()
                             {
                                 userId = customWebSocket.UserId,
                                 markflag = true,
                             }
-                        }).Result;
+                        });
 
-                        var result3 = _userFormBusiness.GetHistoryDataCountAsync(new Input<OA_UserFormInputDTO>()
+                        var result3 = await _userFormBusiness.GetHistoryDataCountAsync(new Input<OA_UserFormInputDTO>()
                         {
                             Search = new OA_UserFormInputDTO()
                             {
                                 userId = customWebSocket.UserId,
                             }
-                        }).Result;
+                        });
 
-                        var result4 = _noticeBusiness.GetHistoryDataCountAsync(new Input<D_NoticeInputDTO>()
+                        var result4 = await _noticeBusiness.GetHistoryDataCountAsync(new Input<D_NoticeInputDTO>()
                         {
                             Search = new D_NoticeInputDTO()
                             {
                                 userId = customWebSocket.UserId,
                                 markflag = true,
                             }
-                        }).Result;
+                        });
                         //查询并发送给客户端
                         var send = new MessageResult()
                         {
@@ -106,7 +106,7 @@ namespace AIStudio.Service.Quartz
                             MessageType = WSMessageType.PushType
                         };
                         byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send));
-                        customWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None).Wait();
+                        await customWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                     }
                 }
 
@@ -123,7 +123,6 @@ namespace AIStudio.Service.Quartz
             }
 
             FileQuartz.WriteJobExecute(logLevel, trigger.FullName, message);
-            return Task.CompletedTask;
         }
     }
 }

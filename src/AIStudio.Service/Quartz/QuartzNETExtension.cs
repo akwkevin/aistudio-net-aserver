@@ -43,12 +43,12 @@ namespace AIStudio.Service.Quartz
 
             _taskList = _mapper.Map<List<Quartz_TaskDTO>>(_quartz_TaskBusiness.GetList());
 
-            _taskList.ForEach(x =>
+            _taskList.ForEach(async x =>
             {
                 try
                 {
                     options = x;
-                    var result = x.AddJob(_schedulerFactory, true).Result;
+                    var result = await x.AddJob(_schedulerFactory, true);
                    
                 }
                 catch (Exception ex)
@@ -124,7 +124,7 @@ namespace AIStudio.Service.Quartz
                     return result.Item2;
                 if (!init)
                 {
-                    FileQuartz.SaveJob(new List<Quartz_TaskDTO> { taskOptions });
+                    await FileQuartz.SaveJob(new List<Quartz_TaskDTO> { taskOptions });
                     _taskList.Add(taskOptions);
                 }
 
@@ -226,7 +226,7 @@ namespace AIStudio.Service.Quartz
             return schedulerFactory.TriggerAction(taskOptions.TaskName, taskOptions.GroupName, JobAction.立即执行, taskOptions);
         }
 
-        public static object ModifyTaskEntity(this Quartz_TaskDTO taskOptions, ISchedulerFactory schedulerFactory, JobAction action)
+        public static async Task<object> ModifyTaskEntity(this Quartz_TaskDTO taskOptions, ISchedulerFactory schedulerFactory, JobAction action)
         {
             Quartz_TaskDTO options = null;
             object result = null;
@@ -251,7 +251,7 @@ namespace AIStudio.Service.Quartz
                     }
 
                     //生成任务并添加新配置
-                    result = taskOptions.AddJob(schedulerFactory, false).GetAwaiter().GetResult();
+                    result = await taskOptions.AddJob(schedulerFactory, false);
                     break;
                 case JobAction.暂停:
                 case JobAction.开启:
@@ -273,7 +273,7 @@ namespace AIStudio.Service.Quartz
                     break;
             }
             //生成配置文件
-            FileQuartz.SaveJob(new List<Quartz_TaskDTO> { options });
+            await FileQuartz.SaveJob(new List<Quartz_TaskDTO> { options });
             FileQuartz.WriteJobAction(action, taskOptions.TaskName, taskOptions.GroupName, "操作对象：" + JsonConvert.SerializeObject(taskOptions));
             return result;
         }
@@ -293,13 +293,22 @@ namespace AIStudio.Service.Quartz
             try
             {
                 IScheduler scheduler = await schedulerFactory.GetScheduler();
-                List<JobKey> jobKeys = scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)).Result.ToList();
+                List<JobKey> jobKeys = (await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName))).ToList();
                 if (jobKeys == null || jobKeys.Count() == 0)
                 {
                     errorMsg = $"未找到分组[{groupName}]";
                     return new { status = false, msg = errorMsg };
                 }
-                JobKey jobKey = jobKeys.Where(s => scheduler.GetTriggersOfJob(s).Result.Any(x => (x as CronTriggerImpl).Name == taskName)).FirstOrDefault();
+
+                JobKey jobKey = null;
+                foreach (var key in jobKeys)
+                {
+                    if ((await scheduler.GetTriggersOfJob(key)).Any(x => (x as CronTriggerImpl).Name == taskName))
+                    {
+                        jobKey = key;
+                        break;
+                    }
+                }               
                 if (jobKey == null)
                 {
                     errorMsg = $"未找到触发器[{taskName}]";
