@@ -51,7 +51,16 @@ namespace Coldairarrow.Api.Controllers.D_Manage
             alluser.Add(new D_OnlineUserDTO(smallAssistant.UserId, smallAssistant.UserName, smallAssistant.Avatar));
             var allonline = _wsFactory.AllWithAssistant();
 
-            alluser.ForEach(p => { if (allonline.Any(q => q.UserId == p.UserId)) { p.Online = true; } });
+            alluser.ForEach(p =>
+            {
+                var onlineuser = allonline.FirstOrDefault(q => q.UserId == p.UserId);
+                if (onlineuser != null)
+                {
+                    p.Online = true;
+                    p.IP = onlineuser.IP;
+                    p.ConnectedTime = onlineuser.ConnectedTime;
+                }
+            });
 
             var allgroup = (await _d_UserGroupBusiness.GetIQueryable().Where(p => p.UserIds.Contains(_operator.UserId) || p.CreatorId == _operator.UserId).ToListAsync())
                 .Select(p =>

@@ -16,13 +16,14 @@ using Coldairarrow.Entity.Quartz_Manage;
 using Coldairarrow.Business.OA_Manage;
 using Coldairarrow.Entity.OA_Manage;
 using Quartz;
+using System.Threading.Tasks;
 
 namespace Coldairarrow.Api
 {
     //astudio edit
     public class SeedData
     {
-        public static async void EnsureSeedData(IServiceProvider provider)
+        public static async Task EnsureSeedData(IServiceProvider provider)
         {
             var logger = provider.GetRequiredService<ILogger<SeedData>>();
 

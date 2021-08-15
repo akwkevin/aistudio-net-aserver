@@ -88,5 +88,9 @@ namespace Coldairarrow.Business.D_Manage
         //public string LastDateTimeString { get; set; }
         public int Favorite { get; set; }
 
+        public string IP { get; set; }
+
+        public DateTime ConnectedTime { get; set; }
+
     }
 }

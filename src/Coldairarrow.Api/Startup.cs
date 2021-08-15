@@ -125,11 +125,11 @@ namespace Coldairarrow.Api
 
 
 
-        private void InitData(IServiceProvider serviceProvider)
+        private async void InitData(IServiceProvider serviceProvider)
         {
             using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {    
-                SeedData.EnsureSeedData(serviceScope.ServiceProvider);
+                await SeedData.EnsureSeedData(serviceScope.ServiceProvider);
             }
         }
 
