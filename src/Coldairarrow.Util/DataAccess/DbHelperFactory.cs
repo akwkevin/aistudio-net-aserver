@@ -22,6 +22,7 @@ namespace Coldairarrow.Util
                 case DatabaseType.MySql: return new MySqlHelper(conString);
                 case DatabaseType.Oracle: return new OracleHelper(conString);
                 case DatabaseType.PostgreSql: return new PostgreSqlHelper(conString);
+                case DatabaseType.SQLite: return new SQLiterHelper(conString);
                 default: throw new Exception("暂不支持");
             }
         }

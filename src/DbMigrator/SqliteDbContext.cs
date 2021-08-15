@@ -1,20 +1,19 @@
 ﻿using EFCore.Sharding;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Demo.DbMigrator
 {
-    /// <summary>
-    /// BaseDbContext
-    /// </summary>
-    public class BaseDbContext : GenericDbContext
+    public class SqliteDbContext : GenericDbContext
     {
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dbContext"></param>
-        public BaseDbContext(GenericDbContext dbContext)
+        public SqliteDbContext(GenericDbContext dbContext)
             : base(dbContext)
         {
 
