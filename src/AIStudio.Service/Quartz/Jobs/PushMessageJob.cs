@@ -111,18 +111,18 @@ namespace AIStudio.Service.Quartz
                 }
 
                 message = stringBuilder.ToString();
-                if (string.IsNullOrEmpty(message))
+                if (!string.IsNullOrEmpty(message))
                 {
-                    logLevel = LogLevel.Trace;
-                }
+                    FileQuartz.WriteJobExecute(logLevel, trigger.FullName, message);
+                }            
             }
             catch (Exception ex)
             {
                 logLevel = LogLevel.Error;
                 message = ex.Message;
+                FileQuartz.WriteJobExecute(logLevel, trigger.FullName, message);
             }
-
-            FileQuartz.WriteJobExecute(logLevel, trigger.FullName, message);
+           
         }
     }
 }

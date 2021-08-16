@@ -1,0 +1,51 @@
+﻿using EFCore.Sharding;
+using EFCore.Sharding.Tests;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
+
+namespace Demo.HelloWorld
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            ServiceCollection services = new ServiceCollection();
+            services.AddLogging(config =>
+            {
+                config.AddConsole();
+            });
+            services.AddEFCoreSharding(config =>
+            {
+                config.UseDatabase(Config.SQLITE1, DatabaseType.SQLite);
+            });
+            var serviceProvider = services.BuildServiceProvider();
+            new EFCoreShardingBootstrapper(serviceProvider).StartAsync(default).Wait();
+
+            using var scop = serviceProvider.CreateScope();
+            //拿到注入的IDbAccessor即可进行所有数据库操作
+            var db = scop.ServiceProvider.GetService<IDbAccessor>();
+            var data = db.GetDataSetWithSql("SELECT name FROM sqlite_master where type='table' order by name");
+
+            var logger = scop.ServiceProvider.GetService<ILogger<Program>>();
+            while (true)
+            {
+                await db.InsertAsync(new Base_UnitTest
+                {
+                    Age = 100,
+                    CreateTime = DateTime.Now,
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = Guid.NewGuid().ToString(),
+                    UserName = Guid.NewGuid().ToString()
+                });
+                var count = await db.GetIQueryable<Base_UnitTest>().CountAsync();
+
+                logger.LogWarning("当前数量:{Count}", count);
+
+                await Task.Delay(1000);
+            }
+        }
+    }
+}

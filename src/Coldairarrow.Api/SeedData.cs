@@ -27,6 +27,31 @@ namespace Coldairarrow.Api
         {
             var logger = provider.GetRequiredService<ILogger<SeedData>>();
 
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            var dbOptions = configuration.GetSection("Database:BaseDb").Get<DatabaseOptions>();
+
+            var dbLinkBusiness = provider.GetRequiredService<IBase_DbLinkBusiness>();
+            var baseDb = await dbLinkBusiness.FirstOrDefaultAsync(p => p.LinkName == "BaseDb");
+            if (baseDb == null)
+            {
+                baseDb = new Base_DbLink()
+                {
+                    Id = IdHelper.GetId(),
+                    LinkName = "BaseDb",
+                    ConnectionStr = dbOptions.ConnectionString,
+                    DbType = dbOptions.DatabaseType.ToString(),
+                    CreateTime = DateTime.Now,
+                };
+
+                var result = await dbLinkBusiness.InsertAsync(baseDb);
+
+                logger.LogTrace($"BaseDb {dbOptions.ConnectionString}-{dbOptions.DatabaseType.ToString()} created");
+            }
+            else
+            {
+                logger.LogTrace($"BaseDb {dbOptions.ConnectionString}-{dbOptions.DatabaseType.ToString()} already exists");
+            }
+
             var roleBusiness = provider.GetRequiredService<IBase_RoleBusiness>();
             var admin = await roleBusiness.FirstOrDefaultAsync(p => p.RoleName == RoleTypes.部门管理员.ToString());
             if (admin == null)
@@ -69,10 +94,6 @@ namespace Coldairarrow.Api
 
                 logger.LogTrace("admin created");
             }
-            else
-            {
-                logger.LogTrace("admin already exists");
-            }
 
             //alice ,123456,
             var alice = await userBusiness.FirstOrDefaultAsync(p => p.UserName == "alice");
@@ -91,10 +112,6 @@ namespace Coldairarrow.Api
 
                 logger.LogTrace("alice created");
             }
-            else
-            {
-                logger.LogTrace("alice already exists");
-            }
 
             //bob ,123456,
             var bob = await userBusiness.FirstOrDefaultAsync(p => p.UserName == "bob");
@@ -110,10 +127,6 @@ namespace Coldairarrow.Api
                 var result = await userBusiness.InsertAsync(bob);
 
                 logger.LogTrace("bob created");
-            }
-            else
-            {
-                logger.LogTrace("bob already exists");
             }
 
             var actionBusiness = provider.GetRequiredService<IBase_ActionBusiness>();
@@ -175,10 +188,6 @@ namespace Coldairarrow.Api
                 var result = await actionBusiness.InsertAsync(actions);
                 logger.LogTrace("action created");
             }
-            else
-            {
-                logger.LogTrace("action already exists");
-            }
 
             var appSecretBussiness = provider.GetRequiredService<IBase_AppSecretBusiness>();
             var appSecretcount = await appSecretBussiness.GetIQueryable().CountAsync();
@@ -189,32 +198,7 @@ namespace Coldairarrow.Api
                     new Base_AppSecret(){  Id="1172497995938271232", AppId="PcAdmin", AppSecret="wtMaiTRPTT3hrf5e", AppName="后台AppId", CreateTime=DateTime.Now},
                     new Base_AppSecret(){  Id="1173937877642383360", AppId="AppAdmin", AppSecret="IVh9LLSVFcoQPQ5K", AppName="APP密钥", CreateTime=DateTime.Now}
                 };
-            }
-
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            var dbOptions = configuration.GetSection("Database:BaseDb").Get<DatabaseOptions>();
-
-            var dbLinkBusiness = provider.GetRequiredService<IBase_DbLinkBusiness>();
-            var baseDb = await dbLinkBusiness.FirstOrDefaultAsync(p => p.LinkName == "BaseDb");
-            if (baseDb == null)
-            {
-                baseDb = new Base_DbLink()
-                {
-                    Id = IdHelper.GetId(),
-                    LinkName = "BaseDb",
-                    ConnectionStr = dbOptions.ConnectionString,
-                    DbType = dbOptions.DatabaseType.ToString(),
-                    CreateTime = DateTime.Now,
-                };
-
-                var result = await dbLinkBusiness.InsertAsync(baseDb);
-
-                logger.LogTrace("baseDb created");
-            }
-            else
-            {
-                logger.LogTrace("baseDb already exists");
-            }
+            }          
 
             if (configuration.GetSection("UseQuartz").Get<bool>() == true)
             {
@@ -241,10 +225,6 @@ namespace Coldairarrow.Api
 
                     logger.LogDebug("resetDataJob created");
                 }
-                else
-                {
-                    logger.LogDebug("resetDataJob already exists");
-                }
 
                 var saveMessageJob = quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "SaveMessageJob").Result;
 
@@ -266,10 +246,6 @@ namespace Coldairarrow.Api
                     var result = await quartz_TaskBusiness.InsertAsync(saveMessageJob);
 
                     logger.LogDebug("storeMessageJob created");
-                }
-                else
-                {
-                    logger.LogDebug("storeMessageJob already exists");
                 }
 
                 var pushMessageJob = await quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "PushMessageJob");
@@ -293,10 +269,6 @@ namespace Coldairarrow.Api
 
                     logger.LogDebug("pushMessageJob created");
                 }
-                else
-                {
-                    logger.LogDebug("pushMessageJob already exists");
-                }
 
                 var textJob = await quartz_TaskBusiness.FirstOrDefaultAsync(p => p.TaskName == "GetLog");
 
@@ -319,10 +291,6 @@ namespace Coldairarrow.Api
                     var result = await quartz_TaskBusiness.InsertAsync(textJob);
 
                     logger.LogDebug("textJob created");
-                }
-                else
-                {
-                    logger.LogDebug("textJob already exists");
                 }
 
             }
@@ -357,10 +325,6 @@ namespace Coldairarrow.Api
 
                     var result = await oA_DefTypeBusiness.InsertAsync(defs);
                     logger.LogDebug("oa_deftype created");
-                }
-                else
-                {
-                    logger.LogDebug("oa_deftype already exists");
                 }
 
                 var oA_DefFormBusiness = provider.GetRequiredService<IOA_DefFormBusiness>();
@@ -465,10 +429,6 @@ namespace Coldairarrow.Api
                     defs.Add(def);
                     var result = await oA_DefFormBusiness.InsertAsync(defs);
                     logger.LogDebug("oa_defform created");
-                }
-                else
-                {
-                    logger.LogDebug("oa_defform already exists");
                 }
             }
         }

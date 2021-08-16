@@ -51,7 +51,7 @@ namespace AIStudio.Service.WebSocketEx
                             UserName = userName,
                             UserId = userId,
                             IP = ip,
-
+                            ConnectedTime = DateTime.Now,
                         };
                         wsFactory.Add(userWebSocket);
                         //await wsmHandler.SendInitialMessages(userWebSocket);
