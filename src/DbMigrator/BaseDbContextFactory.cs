@@ -8,12 +8,14 @@ namespace Demo.DbMigrator
     /// <summary>
     /// BaseDbContextFactory
     /// </summary>
-    public class BaseDbContextFactory : IDesignTimeDbContextFactory<BaseDbContext>
+    public class BaseDbContextFactory : IDesignTimeDbContextFactory<SqliteDbContext>
     {
         //private static readonly string _connectionString = "Data Source=121.36.12.76;Initial Catalog=Colder.Admin.AntdVue;uid=sa;pwd=aic3600!";
-        private static readonly string _connectionString = "Data Source=.;Initial Catalog=Colder.Admin.AntdVue;Integrated Security=True;Pooling=true;";
+        //private static readonly string _connectionString = "Data Source=.;Initial Catalog=Colder.Admin.AntdVue;Integrated Security=True;Pooling=true;";
+        private static readonly string _connectionString = "Data Source=Coldairarrow.Api.db";
 
-        private static readonly DatabaseType _databaseType = DatabaseType.SqlServer;
+        //private static readonly DatabaseType _databaseType = DatabaseType.SqlServer;
+        private static readonly DatabaseType _databaseType = DatabaseType.SQLite;
         static BaseDbContextFactory()
         {
             ServiceCollection services = new ServiceCollection();
@@ -48,7 +50,7 @@ namespace Demo.DbMigrator
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public BaseDbContext CreateDbContext(string[] args)
+        public SqliteDbContext CreateDbContext(string[] args)
         {
             var db = ServiceProvider
                 .GetService<IDbFactory>()
@@ -58,7 +60,9 @@ namespace Demo.DbMigrator
                     DbType = _databaseType,
                 });
 
-            return new BaseDbContext(db);
+
+            return new SqliteDbContext(db);
+
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using WorkflowCore.Interface;
 using WorkflowCore.Services.DefinitionStorage;
 
@@ -19,7 +20,7 @@ namespace AIStudio.Service.WorkflowCore
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseWorkflow(this IApplicationBuilder app)
+        public static async Task<IApplicationBuilder> UseWorkflow(this IApplicationBuilder app)
         {
             IServiceProvider services = app.ApplicationServices;
 
@@ -27,7 +28,7 @@ namespace AIStudio.Service.WorkflowCore
             IOA_DefFormBusiness _oA_DefFormBusiness = services.GetService<IOA_DefFormBusiness>();
             ILogger _logger = services.GetService<ILogger<OAExtension>>();
 
-            var defforms = _oA_DefFormBusiness.GetListAsync().Result;
+            var defforms = await _oA_DefFormBusiness.GetListAsync();
             foreach(var defform in defforms)
             {
                 try

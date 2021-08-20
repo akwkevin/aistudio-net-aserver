@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Coldairarrow.Entity\02.Coldairarrow.Entity.csproj" />
+    <ProjectReference Include="..\WorkflowCore\providers\WorkflowCore.Persistence.EntityFramework\WorkflowCore.Persistence.EntityFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -25,7 +25,6 @@ namespace Coldairarrow.Business.Base_Manage
             IBase_UserCache userCache,
             IOperator @operator,
             IMapper mapper,
-            IShardingDbAccessor shardingDb,
             IBase_DepartmentBusiness departmentBusiness
             )
             : base(db)

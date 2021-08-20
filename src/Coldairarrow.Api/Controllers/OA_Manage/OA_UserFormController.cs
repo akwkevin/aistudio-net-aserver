@@ -164,8 +164,9 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
                
                 OAData oAData = await OAExtension.InitOAStep(data);
 
-                var res = await _oA_UserFormBus.RunTransactionAsync(async () =>
-                {
+                //去掉事务，sqlite不支持
+                //var res = await _oA_UserFormBus.RunTransactionAsync(async () =>
+                //{
                     var def = _workflowRegistry.GetDefinition(data.DefFormJsonId, data.DefFormJsonVersion);
             
                     var workflowId = await _workflowHost.StartWorkflow(def.Id, oAData);
@@ -184,9 +185,9 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
                   
 
                     await _oA_UserFormStepBusiness.AddDataAsync(step);
-                });
-                if (!res.Success)
-                    throw res.ex;
+                //});
+                //if (!res.Success)
+                //    throw res.ex;
             }
             else
             {
@@ -243,14 +244,15 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
             step.Remarks = input.remark;
             step.Status = (int)OAStatus.Discard;
 
-            var res = await _oA_UserFormBus.RunTransactionAsync(async () =>
-            {
+            //去掉事务，sqlite不支持
+            //var res = await _oA_UserFormBus.RunTransactionAsync(async () =>
+            //{
                 await _workflowHost.TerminateWorkflow(input.id);
                 await _oA_UserFormBus.UpdateDataAsync(data);
                 await _oA_UserFormStepBusiness.AddDataAsync(step);
-            });
-            if (!res.Success)
-                throw res.ex;
+            //});
+            //if (!res.Success)
+            //    throw res.ex;
         }
 
         [HttpPost]

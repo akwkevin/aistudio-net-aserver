@@ -1,5 +1,6 @@
 ﻿using EFCore.Sharding;
 using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using MySqlConnector;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
@@ -29,6 +30,7 @@ namespace Coldairarrow.Util
                 case DatabaseType.MySql: factory = MySqlConnectorFactory.Instance; break;
                 case DatabaseType.PostgreSql: factory = NpgsqlFactory.Instance; break;
                 case DatabaseType.Oracle: factory = OracleClientFactory.Instance; break;
+                case DatabaseType.SQLite:factory = SqliteFactory.Instance; break;
 
                 default: throw new Exception("请传入有效的数据库！");
             }

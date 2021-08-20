@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using WorkflowCore.Models;
 
 namespace WorkflowCore.Persistence.EntityFramework.Models
-{    
+{
+    [Table("ExtensionAttribute")]
     public class PersistedExtensionAttribute
     {
         [Key]

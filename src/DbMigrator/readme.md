@@ -23,6 +23,8 @@
 
 	Add-Migration InitialCreate
 
+	Add-Migration InitialCreate -OutputDir Sqlite -c SqliteDbContext
+
 	效果：会在项目中生成类似 201708220135292_InitialCreate.cs 的类，里面包含了数据库的创建逻辑。
 
 2.2、已存在数据库时的初始化指令（只生成__MigrationHistory表）：
@@ -45,6 +47,8 @@
 5.1、更新数据库
 
 	Update-Database
+
+	Update-Database -context SqliteDbContext
 
 	效果：将未应用的迁移提交到数据库。
 	

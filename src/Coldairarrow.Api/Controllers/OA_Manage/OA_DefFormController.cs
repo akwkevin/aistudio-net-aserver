@@ -84,17 +84,18 @@ namespace Coldairarrow.Api.Controllers.OA_Manage
 
                 data.WorkflowJSON = OAExtension.InitOAData(data.WorkflowJSON, data.Id);
 
-                var res = await _oA_DefFormBus.RunTransactionAsync(async () =>
-                {
+                //去掉事务，sqlite不支持
+                //var res = await _oA_DefFormBus.RunTransactionAsync(async () =>
+                //{
                     var def = _definitionLoader.LoadDefinition(data.WorkflowJSON, Deserializers.Json);
                     data.JSONId = def.Id;
                     data.JSONVersion = def.Version;
                     data.Status = 0;
                     await _oA_DefFormBus.AddDataAsync(data);
 
-                });
-                if (!res.Success)
-                    throw res.ex;
+                //});
+                //if (!res.Success)
+                //    throw res.ex;
             }
             else
             {

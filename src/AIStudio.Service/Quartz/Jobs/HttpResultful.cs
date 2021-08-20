@@ -11,7 +11,7 @@ namespace AIStudio.Service.Quartz
 {
     public class HttpResultful : IJob
     {
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             DateTime dateTime = DateTime.Now;
             Quartz_TaskDTO taskOptions = context.GetTaskOptions();
@@ -20,13 +20,13 @@ namespace AIStudio.Service.Quartz
             if (taskOptions == null)
             {               
                 FileQuartz.WriteJobExecute(LogLevel.Warning, trigger.FullName , "未到找作业或可能被移除"); 
-                return Task.CompletedTask;
+                return;
             }
 
             if (string.IsNullOrEmpty(taskOptions.ApiUrl) || taskOptions.ApiUrl == "/")
             {                
                 FileQuartz.WriteJobExecute(LogLevel.Warning, trigger.FullName , "未配置url");
-                return Task.CompletedTask;
+                return;
             }
 
             LogLevel logLevel = LogLevel.Information;
@@ -41,11 +41,11 @@ namespace AIStudio.Service.Quartz
 
                 if (taskOptions.RequestType?.ToLower() == "get")
                 {
-                    httpMessage = HttpManager.HttpGetAsync(taskOptions.ApiUrl, header).Result;
+                    httpMessage = await HttpManager.HttpGetAsync(taskOptions.ApiUrl, header);
                 }
                 else
                 {
-                    httpMessage = HttpManager.HttpPostAsync(taskOptions.ApiUrl, null, null, 60, header).Result;
+                    httpMessage = await HttpManager.HttpPostAsync(taskOptions.ApiUrl, null, null, 60, header);
                 }
             }
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace AIStudio.Service.Quartz
             }
 
             FileQuartz.WriteJobExecute(logLevel, trigger.FullName, httpMessage);
-            return Task.CompletedTask;
+            return;
         }
     }
 }

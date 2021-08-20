@@ -17,6 +17,8 @@ namespace AIStudio.Service.WebSocketEx
 
         public bool IsFirstPushed { get; set; }
         public string IP { get; set; }
+
+        public DateTime ConnectedTime { get; set; }
        
     }
 

@@ -14,11 +14,11 @@ namespace Demo.DbMigrator
         /// 
         /// </summary>
         /// <param name="dbContext"></param>
-        public BaseDbContext(GenericDbContext dbContext) 
+        public BaseDbContext(GenericDbContext dbContext)
             : base(dbContext)
         {
 
         }
-       
+
     }
 }

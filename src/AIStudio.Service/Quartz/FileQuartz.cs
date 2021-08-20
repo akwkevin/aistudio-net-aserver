@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AIStudio.Service.Quartz
 {
@@ -14,18 +15,18 @@ namespace AIStudio.Service.Quartz
         private static ILogger _logger { get => ServiceLocator.Instance.GetService<ILogger<FileQuartz>>(); }
 
 
-        public static void SaveJob(List<Quartz_TaskDTO> taskList)
+        public static async Task SaveJob(List<Quartz_TaskDTO> taskList)
         {
             foreach (var task in taskList)
             {
                 if (task.CreateTime == DateTime.MinValue)
                 {
                     task.CreateTime = DateTime.Now;
-                    _quartz_TaskBusiness.InsertAsync(task).Wait();
+                    await _quartz_TaskBusiness.InsertAsync(task);
                 }
                 else
                 {
-                    _quartz_TaskBusiness.UpdateAsync(task).Wait();
+                    await _quartz_TaskBusiness.UpdateAsync(task);
                 }
             }
         }

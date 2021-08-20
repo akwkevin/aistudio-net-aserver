@@ -66,7 +66,7 @@ namespace Coldairarrow.Api
           
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //跨域
             app.UseCors(x =>
@@ -119,17 +119,17 @@ namespace Coldairarrow.Api
 
             if (_configuration.GetSection("UseWorkflow").Get<bool>() == true)
             {
-                app.UseWorkflow();
+                await app.UseWorkflow();
             }
         }
 
 
 
-        private void InitData(IServiceProvider serviceProvider)
+        private async void InitData(IServiceProvider serviceProvider)
         {
             using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {    
-                SeedData.EnsureSeedData(serviceScope.ServiceProvider);
+                await SeedData.EnsureSeedData(serviceScope.ServiceProvider);
             }
         }
 

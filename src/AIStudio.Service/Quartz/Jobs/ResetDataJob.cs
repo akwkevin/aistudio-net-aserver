@@ -14,16 +14,14 @@ namespace AIStudio.Service.Quartz
     {
         IBase_UserBusiness userBusiness { get { return ServiceLocator.Instance.GetRequiredService<IBase_UserBusiness>(); } }
 
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            var adminUser = userBusiness.FirstOrDefaultAsync(p => p.UserName == "Admin").Result;
+            var adminUser = await userBusiness.FirstOrDefaultAsync(p => p.UserName == "Admin");
             if (adminUser != null)
             {
                 adminUser.Password = "Admin".ToMD5String();
-                var result = userBusiness.UpdateAsync(adminUser).Result;
+                var result = await userBusiness.UpdateAsync(adminUser);
             }
-
-            return Task.CompletedTask;
         }
     }
 }
