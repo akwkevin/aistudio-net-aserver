@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" Version="5.0.2" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EFCore.Sharding\EFCore.Sharding.csproj" />

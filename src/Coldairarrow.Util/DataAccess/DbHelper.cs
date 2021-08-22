@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SQLite;
 using System.IO;
 using System.Text;
 
@@ -77,6 +78,10 @@ namespace Coldairarrow.Util
                     cmd.CommandText = sql;
 
                     DbDataAdapter adapter = dbProviderFactory.CreateDataAdapter();
+                    if (_dbType == DatabaseType.SQLite)
+                    {
+                        adapter = new SQLiteDataAdapter();
+                    }
                     adapter.SelectCommand = cmd;
                     DataSet table = new DataSet();
                     adapter.Fill(table);
@@ -117,6 +122,10 @@ namespace Coldairarrow.Util
                     }
 
                     DbDataAdapter adapter = dbProviderFactory.CreateDataAdapter();
+                    if (_dbType == DatabaseType.SQLite)
+                    {
+                        adapter = new SQLiteDataAdapter();
+                    }
                     adapter.SelectCommand = cmd;
                     DataSet table = new DataSet();
                     adapter.Fill(table);
