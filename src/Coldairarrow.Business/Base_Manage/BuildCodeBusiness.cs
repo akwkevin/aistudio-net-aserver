@@ -166,6 +166,24 @@ $@"        <a-form-model-item label=""{aField.Description}"" prop=""{aField.Name
             });
         }
 
+        public Dictionary<string, List<TableInfo>> GetDbTableInfo(BuildInputDTO input)
+        {
+            Dictionary<string, List<TableInfo>> tabInfoDictionary = new Dictionary<string, List<TableInfo>>();
+            string linkId = input.linkId;
+            List<string> tables = input.tables;
+
+            //内部成员初始化
+            _dbHelper = GetTheDbHelper(linkId);
+
+            tables.ForEach(aTable =>
+            {
+                List<TableInfo> tableFieldInfo = _dbHelper.GetDbTableInfo(aTable);
+                tabInfoDictionary.Add(aTable, tableFieldInfo);
+            });
+
+            return tabInfoDictionary;
+        }
+
         #endregion
 
         #region 私有成员

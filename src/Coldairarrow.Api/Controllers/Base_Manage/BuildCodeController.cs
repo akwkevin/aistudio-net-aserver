@@ -39,5 +39,11 @@ namespace Coldairarrow.Api.Controllers.Base_Manage
         {
             _buildCodeBus.Build(input);
         }
+
+        [HttpPost]
+        public Dictionary<string, List<TableInfo>> GetDbTableInfo(BuildInputDTO input)
+        {
+            return _buildCodeBus.GetDbTableInfo(input);
+        }
     }
 }

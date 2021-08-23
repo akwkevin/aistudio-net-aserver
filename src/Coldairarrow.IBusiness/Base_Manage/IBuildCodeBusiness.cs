@@ -11,6 +11,8 @@ namespace Coldairarrow.Business.Base_Manage
         List<DbTableInfo> GetDbTableList(string linkId);
 
         void Build(BuildInputDTO input);
+
+        Dictionary<string, List<TableInfo>> GetDbTableInfo(BuildInputDTO input);
     }
 
     public class DbTablesInputDTO
