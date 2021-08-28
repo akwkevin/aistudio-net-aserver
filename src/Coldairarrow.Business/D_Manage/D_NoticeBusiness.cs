@@ -58,7 +58,10 @@ namespace Coldairarrow.Business.D_Manage
                     select @select.Invoke(a, b);
 
                 var user = await _userBusiness.GetTheDataAsync(search.userId);
-
+                if (user == null)
+                {
+                    return null;
+                }
                 Expression<Func<D_NoticeDTO, bool>> a1 = p => p.Mode == NoticeMode.All;
                 if (user.RoleIdList != null)
                 {
@@ -148,6 +151,10 @@ namespace Coldairarrow.Business.D_Manage
                 search.status = 1;
             }
             var q = await SetQueryable(search);
+            if (q == null)
+            {
+                return 0;
+            }
 
             if (search.end == DateTime.MinValue || search.end == null)
             {

@@ -20,7 +20,7 @@ namespace AIStudio.Service.WebSocketEx
         Task SendInitialMessages(CustomWebSocket userWebSocket, string anyText = "#OK");
         Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, CustomWebSocket userWebSocket, ICustomWebSocketFactory wsFactory);
         Task BroadcastOthers(byte[] buffer, CustomWebSocket userWebSocket, ICustomWebSocketFactory wsFactory);
-        Task BroadcastAll(byte[] buffer, CustomWebSocket userWebSocket, ICustomWebSocketFactory wsFactory);
+        Task BroadcastAll(byte[] buffer, ICustomWebSocketFactory wsFactory);
         Task BroadcastOthers(string userIds, CustomWebSocket userWebSocket, object message);
     }
 
@@ -72,10 +72,13 @@ namespace AIStudio.Service.WebSocketEx
                     if (data == null)
                         return;
 
-                    D_UserMessageDTO senddata = null;
+
+                    D_UserMessageDTO senddata = null;//机器人自动回发消息
                     if (string.IsNullOrEmpty(data.GroupId))
                     {
-                        if (data.UserIds == "^" + wsFactory.GetSmallAssistant().UserId + "^")
+                        //如果人工服务不在线，那么使用自动机器人
+                        if (wsFactory.All().Any(p => p.UserId == wsFactory.GetSmallAssistant().UserId) != true &&
+                            data.UserIds == "^" + wsFactory.GetSmallAssistant().UserId + "^")
                         {
                             data.ReadingMarks = "^" + wsFactory.GetSmallAssistant().UserId + "^";
                             senddata = new D_UserMessageDTO()
@@ -96,6 +99,7 @@ namespace AIStudio.Service.WebSocketEx
 
                     InitEntity(data, userWebSocket);
                     _quene.EnQueen<D_UserMessage>(data);
+                    //数据回发
                     {
                         MessageResult send = new MessageResult()
                         {
@@ -104,7 +108,7 @@ namespace AIStudio.Service.WebSocketEx
                             MessageType = WSMessageType.MessageType,
                         };
                         byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send));
-                        //数据回发一份，所有界面能同步
+                        //数据回发一份，所有界面能同步，没有考虑该用户同时在同时多个地方登录。
                         await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                     }
 
@@ -123,8 +127,10 @@ namespace AIStudio.Service.WebSocketEx
                     }
                     else
                     {
+                        //转发给收信人
                         await BroadcastOthers(data, userWebSocket, wsFactory);
                     }
+
                 }
                 else if (message.MessageType == WSMessageType.ReadMessageType)
                 {
@@ -139,6 +145,17 @@ namespace AIStudio.Service.WebSocketEx
                 {
                     await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
                     //_logger.LogDebug(UserLogType.WebSocket.ToEventId(), $"收到{userWebSocket.IP}的心跳包{message.Data}");
+                }
+                else if(message.MessageType == WSMessageType.OnlineUser)//在线用户
+                {
+                    MessageResult send = new MessageResult()
+                    {
+                        Success = true,
+                        Data = _wsFactory.All(),
+                        MessageType = WSMessageType.OnlineUser,
+                    };
+                    byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send));
+                    await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
             }
             catch (Exception ex)
@@ -187,7 +204,7 @@ namespace AIStudio.Service.WebSocketEx
             }
         }
 
-        public async Task BroadcastAll(byte[] buffer, CustomWebSocket userWebSocket, ICustomWebSocketFactory wsFactory)
+        public async Task BroadcastAll(byte[] buffer, ICustomWebSocketFactory wsFactory)
         {
             var all = wsFactory.All();
             foreach (var uws in all)

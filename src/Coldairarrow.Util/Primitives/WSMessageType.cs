@@ -17,5 +17,6 @@ namespace Coldairarrow.Util
         PushType,
         ReadMessageType,
         PingType,
+        OnlineUser,
     }
 }

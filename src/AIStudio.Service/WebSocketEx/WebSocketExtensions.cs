@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,6 +38,7 @@ namespace AIStudio.Service.WebSocketEx
                 {
                     string userName = context.Request.Query["userName"];
                     string userId = context.Request.Query["userId"];
+                    string avatar = context.Request.Query["avatar"];
                     if (!string.IsNullOrEmpty(userName))
                     {
                         WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
@@ -50,11 +53,23 @@ namespace AIStudio.Service.WebSocketEx
                             WebSocket = webSocket,
                             UserName = userName,
                             UserId = userId,
-                            IP = ip,
+                            Avatar = avatar,
+                            IP = ip,                            
                             ConnectedTime = DateTime.Now,
                         };
                         wsFactory.Add(userWebSocket);
                         //await wsmHandler.SendInitialMessages(userWebSocket);
+
+                        //通知所有客户端，更新在线用户列表
+                        MessageResult send = new MessageResult()
+                        {
+                            Success = true,
+                            Data = wsFactory.All(),
+                            MessageType = WSMessageType.OnlineUser,
+                        };                  
+                        byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send));
+                        await wsmHandler.BroadcastAll(bytes, wsFactory);
+
                         try
                         {
                             logger.LogDebug(UserLogType.WebSocket.ToEventId(), $"{userWebSocket.UserName}-{userWebSocket.IP}连接成功");
@@ -94,6 +109,16 @@ namespace AIStudio.Service.WebSocketEx
             }
             wsFactory.Remove(userWebSocket);
             await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+
+            //通知所有客户端，更新在线用户列表
+            MessageResult send = new MessageResult()
+            {
+                Success = true,
+                Data = wsFactory.All(),
+                MessageType = WSMessageType.OnlineUser,
+            };
+            byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send));
+            await wsmHandler.BroadcastAll(bytes, wsFactory);
         }
     }
 }
