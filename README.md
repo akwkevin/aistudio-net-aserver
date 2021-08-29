@@ -14,3 +14,7 @@ https://gitee.com/akwkevin/aistudio.-wpf.-aclient
 最后非常感谢Colder.Admin.AntdVue的作者开源代码。
 
 网页客户端浏览地址http://121.36.12.76:5001/ （账号密码：Admin，Admin） 接口浏览地址http://121.36.12.76:5000/
+
+sqlserver的数据库脚本为 **Colder.Admin.AntdVue.sql** ，在运行项目目录下。
+
+另外：修复了sqlite的使用功能，默认也是，直接启动即可。
