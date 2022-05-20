@@ -4,14 +4,16 @@ using Demo.DbMigrator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DbMigrator.Migrations
+namespace DbMigrator.SqlServer
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220520002827_Base_Dictionary")]
+    partial class Base_Dictionary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -297,11 +299,7 @@ namespace DbMigrator.Migrations
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)")
-                        .HasComment("Value相同，使用Code区分，暂时没启用");
-
-                    b.Property<int>("ControlType")
-                        .HasColumnType("int")
-                        .HasComment("数据类型");
+                        .HasComment("字典名相同，使用Code区分，暂时没启用");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2")
@@ -335,13 +333,13 @@ namespace DbMigrator.Migrations
                         .HasColumnType("datetime2")
                         .HasComment("修改时间");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("字典名/数据名");
+
                     b.Property<string>("ParentId")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("父级Id");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("描述");
 
                     b.Property<int>("Sort")
                         .HasColumnType("int")
@@ -352,17 +350,9 @@ namespace DbMigrator.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasComment("租户Id");
 
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("显示值");
-
                     b.Property<int>("Type")
                         .HasColumnType("int")
                         .HasComment("类型,字典项=0,数据集=1");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("数据值");
 
                     b.HasKey("Id");
 

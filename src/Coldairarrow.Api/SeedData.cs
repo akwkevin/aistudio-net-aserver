@@ -1,21 +1,19 @@
 ﻿using Coldairarrow.Business.Base_Manage;
+using Coldairarrow.Business.OA_Manage;
+using Coldairarrow.Business.Quartz_Manage;
+using Coldairarrow.Entity;
 using Coldairarrow.Entity.Base_Manage;
+using Coldairarrow.Entity.OA_Manage;
+using Coldairarrow.Entity.Quartz_Manage;
 using Coldairarrow.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using Coldairarrow.Entity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Builder;
-using Coldairarrow.Business.Quartz_Manage;
-using Coldairarrow.Entity.Quartz_Manage;
-using Coldairarrow.Business.OA_Manage;
-using Coldairarrow.Entity.OA_Manage;
-using Quartz;
 using System.Threading.Tasks;
 
 namespace Coldairarrow.Api
@@ -141,6 +139,7 @@ namespace Coldairarrow.Api
                          new Base_Action(){ Id="1182652266117599232",Deleted = false, ParentId="1178957405992521728", Type = ActionType.页面, Name="用户管理", Url="/Base_Manage/Base_User/List",      Value=null,                    NeedAction=true,    Icon="user-add",       Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1182652367447789568",Deleted = false, ParentId="1178957405992521728", Type = ActionType.页面, Name="角色管理", Url="/Base_Manage/Base_Role/List",      Value=null,                    NeedAction=true,    Icon="safety",         Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1182652433302556672",Deleted = false, ParentId="1178957405992521728", Type = ActionType.页面, Name="部门管理", Url="/Base_Manage/Base_Department/List",Value=null,                    NeedAction=true,    Icon="usergroup-add",  Sort=1, CreateTime=DateTime.Now},
+                         new Base_Action(){ Id="1182652599069839362",Deleted = false, ParentId="1178957405992521728", Type = ActionType.页面, Name="字典管理", Url="/Base_Manage/Base_Dictionary/List",Value=null,                    NeedAction=true,    Icon="edit",           Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1182652599069839360",Deleted = false, ParentId="1178957405992521728", Type = ActionType.页面, Name="操作日志", Url="/Base_Manage/Base_UserLog/List",   Value=null,                    NeedAction=true,    Icon="file-search",    Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1182652599069839361",Deleted = false, ParentId="1178957405992521728", Type = ActionType.页面, Name="任务管理", Url="/Quartz_Manage/Quartz_Task/List",  Value=null,                    NeedAction=true,    Icon="calendar",       Sort=1, CreateTime=DateTime.Now},
                          new Base_Action(){ Id="1188800845714558976",Deleted = false, ParentId="1182652266117599232", Type = ActionType.权限, Name="增",       Url=null,                               Value="Base_User.Add",         NeedAction=true,    Icon=null,             Sort=1, CreateTime=DateTime.Now},
@@ -198,7 +197,21 @@ namespace Coldairarrow.Api
                     new Base_AppSecret(){  Id="1172497995938271232", AppId="PcAdmin", AppSecret="wtMaiTRPTT3hrf5e", AppName="后台AppId", CreateTime=DateTime.Now},
                     new Base_AppSecret(){  Id="1173937877642383360", AppId="AppAdmin", AppSecret="IVh9LLSVFcoQPQ5K", AppName="APP密钥", CreateTime=DateTime.Now}
                 };
-            }          
+            }
+
+            var dictionaryBusiness = provider.GetRequiredService<IBase_DictionaryBusiness>();
+            var dictionaryBusinesscount = await dictionaryBusiness.GetIQueryable().CountAsync();
+            if (dictionaryBusinesscount == 0)
+            {
+                List<Base_Dictionary> dictionaries = new List<Base_Dictionary>()
+                    {
+                         new Base_Dictionary(){ Id="1",Deleted = false, ParentId=null,  Type = DictionaryType.字典项, ControlType = ControlType.ComboBox,  Text = "性别", Value="Sex", Code = "", Sort=1, CreateTime=DateTime.Now },
+                         new Base_Dictionary(){ Id="1_1",Deleted = false, ParentId="1", Type = DictionaryType.数据集,  Text = "女", Value="0", Code ="",  Sort=1, CreateTime=DateTime.Now },
+                         new Base_Dictionary(){ Id="1_2",Deleted = false, ParentId="1", Type = DictionaryType.数据集,  Text = "男", Value="1", Code ="",  Sort=2, CreateTime=DateTime.Now },
+                    };
+                var result = await dictionaryBusiness.InsertAsync(dictionaries);
+                logger.LogTrace("dictionary created");
+            }
 
             if (configuration.GetSection("UseQuartz").Get<bool>() == true)
             {

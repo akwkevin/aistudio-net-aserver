@@ -70,6 +70,7 @@ namespace AIStudio.Service.Quartz
                     else
                     {
                         logLevel = LogLevel.Trace;
+                        return;
                     }
 
                     message = $"插入{type.Name}数据{insertcount}条;更新{type.Name}数据{updatecount}条 ";

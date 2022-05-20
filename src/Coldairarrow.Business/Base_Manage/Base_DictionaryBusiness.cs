@@ -1,0 +1,85 @@
+﻿using Coldairarrow.Entity.Base_Manage;
+using Coldairarrow.Util;
+using EFCore.Sharding;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
+
+namespace Coldairarrow.Business.Base_Manage
+{
+    public class Base_DictionaryBusiness : BaseBusiness<Base_Dictionary>, IBase_DictionaryBusiness, ITransientDependency
+    {
+        public Base_DictionaryBusiness(IDbAccessor db)
+            : base(db)
+        {
+        }
+
+        #region 外部接口
+
+        public async Task<List<Base_Dictionary>> GetDataListAsync(Base_DictionaryInputDTO input)
+        {
+            var q = GetIQueryable();
+            q = q
+                .WhereIf(!input.parentId.IsNullOrEmpty(), x => x.ParentId == input.parentId)
+                .WhereIf(input.types?.Length > 0, x => input.types.Contains(x.Type))
+                .WhereIf(input.ActionIds?.Length > 0, x => input.ActionIds.Contains(x.Id))
+                ;
+
+            return await q.OrderBy(x => x.Sort).ToListAsync();
+        }
+
+        public async Task<List<Base_DictionaryDTO>> GetTreeDataListAsync(Base_DictionaryInputDTO input)
+        {
+            var qList = await GetDataListAsync(input);
+
+            var treeList = qList.Select(x => new Base_DictionaryDTO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                ParentId = x.ParentId,
+                Type = x.Type,
+                ControlType = x.ControlType,
+                Text = x.Text,
+                Value = x.Value,  
+                Sort = x.Sort,
+                Remark = x.Remark,
+                selectable = input.selectable
+            }).ToList();
+
+            //菜单节点中,若子节点为空则移除父节点
+            if (input.checkEmptyChildren)
+                treeList = treeList.Where(x => x.Type != 0 || TreeHelper.GetChildren(treeList, x, false).Count > 0).ToList();
+
+            return TreeHelper.BuildTree(treeList);
+        }
+
+        public async Task<Base_Dictionary> GetTheDataAsync(string id)
+        {
+            return await GetEntityAsync(id);
+        }
+
+        public async Task AddDataAsync(Base_Dictionary data)
+        {
+            await InsertAsync(data);
+        }
+
+        public async Task UpdateDataAsync(Base_Dictionary data)
+        {
+            await UpdateAsync(data);
+        }
+
+        public async Task DeleteDataAsync(List<string> ids)
+        {
+            await DeleteAsync(ids);
+        }
+
+        #endregion
+
+        #region 私有成员
+
+        #endregion
+    }
+}

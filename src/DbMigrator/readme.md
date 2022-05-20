@@ -23,7 +23,11 @@
 
 	Add-Migration InitialCreate
 
+## Sqlite
 	Add-Migration InitialCreate -OutputDir Sqlite -c SqliteDbContext
+
+## SqlServer
+	Add-Migration Base_Dictionary -OutputDir SqlServer -c BaseDbContext
 
 	效果：会在项目中生成类似 201708220135292_InitialCreate.cs 的类，里面包含了数据库的创建逻辑。
 
@@ -48,7 +52,11 @@
 
 	Update-Database
 
+## Sqlite
 	Update-Database -context SqliteDbContext
+
+## SqlServer
+	Update-Database -context BaseDbContext
 
 	效果：将未应用的迁移提交到数据库。
 	

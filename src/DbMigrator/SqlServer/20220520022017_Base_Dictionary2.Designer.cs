@@ -4,14 +4,16 @@ using Demo.DbMigrator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DbMigrator.Migrations
+namespace DbMigrator.SqlServer
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220520022017_Base_Dictionary2")]
+    partial class Base_Dictionary2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -297,11 +299,7 @@ namespace DbMigrator.Migrations
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)")
-                        .HasComment("Value相同，使用Code区分，暂时没启用");
-
-                    b.Property<int>("ControlType")
-                        .HasColumnType("int")
-                        .HasComment("数据类型");
+                        .HasComment("字典名相同，使用Code区分，暂时没启用");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2")
@@ -335,13 +333,13 @@ namespace DbMigrator.Migrations
                         .HasColumnType("datetime2")
                         .HasComment("修改时间");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("字典名/数据名");
+
                     b.Property<string>("ParentId")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("父级Id");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("描述");
 
                     b.Property<int>("Sort")
                         .HasColumnType("int")
