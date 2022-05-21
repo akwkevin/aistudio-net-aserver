@@ -48,5 +48,6 @@ namespace Coldairarrow.Entity.Base_Manage
         /// 排序
         /// </summary>
         public int Sort { get; set; }
+
     }
 }

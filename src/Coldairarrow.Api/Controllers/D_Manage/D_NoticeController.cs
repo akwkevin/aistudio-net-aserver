@@ -71,6 +71,8 @@ namespace Coldairarrow.Api.Controllers.D_Manage
             }
             else
             {
+                UpdateEntity(data);
+
                 await _d_NoticeBus.UpdateDataAsync(data);
             }
         }

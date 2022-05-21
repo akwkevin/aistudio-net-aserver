@@ -204,11 +204,21 @@ namespace Coldairarrow.Api
             if (dictionaryBusinesscount == 0)
             {
                 List<Base_Dictionary> dictionaries = new List<Base_Dictionary>()
-                    {
-                         new Base_Dictionary(){ Id="1",Deleted = false, ParentId=null,  Type = DictionaryType.字典项, ControlType = ControlType.ComboBox,  Text = "性别", Value="Sex", Code = "", Sort=1, CreateTime=DateTime.Now },
-                         new Base_Dictionary(){ Id="1_1",Deleted = false, ParentId="1", Type = DictionaryType.数据集,  Text = "女", Value="0", Code ="",  Sort=1, CreateTime=DateTime.Now },
-                         new Base_Dictionary(){ Id="1_2",Deleted = false, ParentId="1", Type = DictionaryType.数据集,  Text = "男", Value="1", Code ="",  Sort=2, CreateTime=DateTime.Now },
-                    };
+                {
+                    new Base_Dictionary(){ Id="1",Deleted = false, ParentId=null,  Type = DictionaryType.字典项, ControlType = ControlType.ComboBox,  Text = "性别", Value="Sex", Code = "", Sort=1, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="1_1",Deleted = false, ParentId="1", Type = DictionaryType.数据集,  Text = "女", Value="0", Code ="",  Sort=1, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="1_2",Deleted = false, ParentId="1", Type = DictionaryType.数据集,  Text = "男", Value="1", Code ="",  Sort=2, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="2",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "姓名", Value="UserName", Code = "", Sort=2, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="3",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "真实姓名", Value="RealName", Code = "", Sort=3, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="4",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "密码", Value="Password", Code = "", Sort=4, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="5",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "生日", Value="Birthday", Code = "", Sort=5, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="6",Deleted = false, ParentId=null,  Type = DictionaryType.字典项, ControlType = ControlType.MultiComboBox,  Text = "角色", Value="RoleIdList", Code = "Role", Sort=6, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="7",Deleted = false, ParentId=null,  Type = DictionaryType.字典项, ControlType = ControlType.TreeSelect,  Text = "部门", Value="DepartmentId", Code = "Department", Sort=7, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="8",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "手机号码", Value="PhoneNumber", Code = "", Sort=8, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="9",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "创建时间", Value="CreateTime", Code = "", Sort=9, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="10",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "修改时间", Value="ModifyTime", Code = "", Sort=10, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="11",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "创建者", Value="CreatorName", Code = "", Sort=11, CreateTime=DateTime.Now },
+                    new Base_Dictionary(){ Id="12",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "修改者", Value="ModifyName", Code = "", Sort=12, CreateTime=DateTime.Now },      };
                 var result = await dictionaryBusiness.InsertAsync(dictionaries);
                 logger.LogTrace("dictionary created");
             }

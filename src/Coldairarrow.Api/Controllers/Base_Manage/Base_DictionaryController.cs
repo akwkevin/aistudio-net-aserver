@@ -60,6 +60,8 @@ namespace Coldairarrow.Api.Controllers.Base_Manage
             }
             else
             {
+                UpdateEntity(data);
+
                 await _base_DictionaryBus.UpdateDataAsync(data);
             }
         }
