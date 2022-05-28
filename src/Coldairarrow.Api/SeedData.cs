@@ -75,6 +75,25 @@ namespace Coldairarrow.Api
                 var result = roleBusiness.InsertAsync(superadmin).Result;
             }
 
+            var departmentBussiness = provider.GetRequiredService<IBase_DepartmentBusiness>();
+            var departmentCount = await departmentBussiness.GetIQueryable().CountAsync();
+            if (departmentCount == 0)
+            {
+                List<Base_Department> departments = new List<Base_Department>()
+                {
+                    new Base_Department(){  Id="1", Name="Wpf控件公司", ParentId = null, CreateTime=DateTime.Now},
+                    new Base_Department(){  Id="2", Name="UI部门", ParentId="1", CreateTime=DateTime.Now},
+                    new Base_Department(){  Id="2_1", Name="UI子部门1", ParentId="2", CreateTime=DateTime.Now},
+                    new Base_Department(){  Id="2_2", Name="UI子部门2", ParentId="2", CreateTime=DateTime.Now},
+                    new Base_Department(){  Id="3", Name="C#部门", ParentId="1", CreateTime=DateTime.Now},
+                    new Base_Department(){  Id="3_1", Name="C#子部门1", ParentId="3", CreateTime=DateTime.Now},
+                    new Base_Department(){  Id="3_2", Name="C#子部门2", ParentId="3", CreateTime=DateTime.Now},
+                };
+
+                var result = await departmentBussiness.InsertAsync(departments);
+                logger.LogTrace("departments created");
+            }
+
             var userBusiness = provider.GetRequiredService<IBase_UserBusiness>();
 
             var adminUser = await userBusiness.FirstOrDefaultAsync(p => p.UserName == "Admin");
@@ -85,6 +104,7 @@ namespace Coldairarrow.Api
                     Id = "Admin",
                     UserName = "Admin",
                     Password = "Admin".ToMD5String(),
+                    DepartmentId = "1",
                     CreateTime = DateTime.Now,
                 };
                 var result = userBusiness.InsertAsync(adminUser).Result;
@@ -102,6 +122,7 @@ namespace Coldairarrow.Api
                     Id = IdHelper.GetId(),
                     UserName = "alice",
                     Password = "123456".ToMD5String(),
+                    DepartmentId = "2",
                     CreateTime = DateTime.Now,
                 };
                 var result = await userBusiness.InsertAsync(alice);
@@ -120,16 +141,17 @@ namespace Coldairarrow.Api
                     Id = IdHelper.GetId(),
                     UserName = "bob",
                     Password = "123456".ToMD5String(),
+                    DepartmentId = "3",
                     CreateTime = DateTime.Now,
                 };
                 var result = await userBusiness.InsertAsync(bob);
 
                 logger.LogTrace("bob created");
-            }
+            }            
 
             var actionBusiness = provider.GetRequiredService<IBase_ActionBusiness>();
-            var actionBusinesscount = await actionBusiness.GetIQueryable().CountAsync();
-            if (actionBusinesscount == 0)
+            var actionBusinessCount = await actionBusiness.GetIQueryable().CountAsync();
+            if (actionBusinessCount == 0)
             {
                 List<Base_Action> actions = new List<Base_Action>()
                     {
@@ -189,19 +211,22 @@ namespace Coldairarrow.Api
             }
 
             var appSecretBussiness = provider.GetRequiredService<IBase_AppSecretBusiness>();
-            var appSecretcount = await appSecretBussiness.GetIQueryable().CountAsync();
-            if (appSecretcount == 0)
+            var appSecretCount = await appSecretBussiness.GetIQueryable().CountAsync();
+            if (appSecretCount == 0)
             {
                 List<Base_AppSecret> actions = new List<Base_AppSecret>()
                 {
                     new Base_AppSecret(){  Id="1172497995938271232", AppId="PcAdmin", AppSecret="wtMaiTRPTT3hrf5e", AppName="后台AppId", CreateTime=DateTime.Now},
                     new Base_AppSecret(){  Id="1173937877642383360", AppId="AppAdmin", AppSecret="IVh9LLSVFcoQPQ5K", AppName="APP密钥", CreateTime=DateTime.Now}
                 };
+
+                var result = await appSecretBussiness.InsertAsync(actions);
+                logger.LogTrace("appSecret created");
             }
 
             var dictionaryBusiness = provider.GetRequiredService<IBase_DictionaryBusiness>();
-            var dictionaryBusinesscount = await dictionaryBusiness.GetIQueryable().CountAsync();
-            if (dictionaryBusinesscount == 0)
+            var dictionaryCount = await dictionaryBusiness.GetIQueryable().CountAsync();
+            if (dictionaryCount == 0)
             {
                 List<Base_Dictionary> dictionaries = new List<Base_Dictionary>()
                 {
@@ -218,7 +243,9 @@ namespace Coldairarrow.Api
                     new Base_Dictionary(){ Id="9",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "创建时间", Value="CreateTime", Code = "", Sort=9, CreateTime=DateTime.Now },
                     new Base_Dictionary(){ Id="10",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "修改时间", Value="ModifyTime", Code = "", Sort=10, CreateTime=DateTime.Now },
                     new Base_Dictionary(){ Id="11",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "创建者", Value="CreatorName", Code = "", Sort=11, CreateTime=DateTime.Now },
-                    new Base_Dictionary(){ Id="12",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "修改者", Value="ModifyName", Code = "", Sort=12, CreateTime=DateTime.Now },      };
+                    new Base_Dictionary(){ Id="12",Deleted = false, ParentId=null,  Type = DictionaryType.字典项,  Text = "修改者", Value="ModifyName", Code = "", Sort=12, CreateTime=DateTime.Now },     
+                };
+
                 var result = await dictionaryBusiness.InsertAsync(dictionaries);
                 logger.LogTrace("dictionary created");
             }
