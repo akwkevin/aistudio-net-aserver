@@ -40,6 +40,7 @@ namespace Coldairarrow.Business.Base_Manage
         public String Url { get; set; }
         public string path { get => Url; }
         public bool NeedAction { get; set; }
+        public string ValueInfo { get; set; }
         public string TypeText { get => ((ActionType)Type).ToString(); }
         public string NeedActionText { get => NeedAction ? "是" : "否"; }
         public object children { get => Children; }

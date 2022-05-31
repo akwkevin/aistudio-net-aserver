@@ -36,6 +36,18 @@ namespace Coldairarrow.Business.D_Manage
                     ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
             }
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
+            }
+
             int count = await q.Where(where).CountAsync();
 
             var list = await q.Where(where).OrderBy($@"{input.SortField} {input.SortType}")
@@ -86,6 +98,17 @@ namespace Coldairarrow.Business.D_Manage
                 where = where.And(newWhere);
             }
 
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
+            }
+
             if (input.Search.isGroup == false)
             {
                 where = where.And(x => string.IsNullOrEmpty(x.GroupId) &&
@@ -117,6 +140,17 @@ namespace Coldairarrow.Business.D_Manage
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
                     ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
+            }
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
             }
 
             if (input.Search.isGroup == false)
@@ -151,6 +185,17 @@ namespace Coldairarrow.Business.D_Manage
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
                     ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
+            }
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
             }
 
             if (input.Search.isGroup == null)
@@ -206,6 +251,17 @@ namespace Coldairarrow.Business.D_Manage
                 var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
                     ParsingConfig.Default, false, $@"{input.Search.condition}.Contains(@0)", input.Search.keyword);
                 where = where.And(newWhere);
+            }
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_UserMessage, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
             }
 
             if (!string.IsNullOrEmpty(input.Search.creatorId))

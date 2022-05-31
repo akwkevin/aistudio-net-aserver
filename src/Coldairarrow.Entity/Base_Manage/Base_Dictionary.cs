@@ -2,7 +2,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Coldairarrow.Entity.Base_Manage
-{    /// <summary>
+{ 
+    /// <summary>
      /// 系统字典表
      /// </summary>
     [Table("Base_Dictionary")]

@@ -4,14 +4,16 @@ using Demo.DbMigrator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DbMigrator.Migrations
+namespace DbMigrator.SqlServer
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220530234831_Base_CommonFormConfig5")]
+    partial class Base_CommonFormConfig5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -222,7 +224,7 @@ namespace DbMigrator.Migrations
                         .HasColumnType("int")
                         .HasComment("显示索引");
 
-                    b.Property<string>("ErrorMessage")
+                    b.Property<string>("Error")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("错误信息");
 

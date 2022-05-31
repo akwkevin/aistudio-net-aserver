@@ -31,7 +31,7 @@ namespace Coldairarrow.Api.Controllers.Base_Manage
         }
 
         [HttpPost]
-        public async Task<List<Base_DictionaryDTO>> GetMenuTreeList(Base_DictionaryInputDTO input)
+        public async Task<List<Base_DictionaryDTO>> GetTreeDataList(Base_DictionaryInputDTO input)
         {
             input.selectable = true;
             input.types = new DictionaryType[] { DictionaryType.字典项, DictionaryType.数据集 };

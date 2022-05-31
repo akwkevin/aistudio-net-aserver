@@ -83,6 +83,17 @@ namespace Coldairarrow.Business.OA_Manage
                 where = where.And(newWhere);
             }
 
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<OA_DefForm, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
+            }
+
             return await q.Where(where).ProjectTo<OA_DefFormDTO>(_mapper.ConfigurationProvider).GetPageResultAsync(input);
         }
 

@@ -46,6 +46,7 @@ namespace Coldairarrow.Business.Base_Manage
                 Type = x.Type,
                 Url = x.Url,
                 Value = x.Id,
+                ValueInfo = x.Value,
                 Icon = x.Icon,
                 Sort = x.Sort,
                 selectable = input.selectable

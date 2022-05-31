@@ -4,14 +4,16 @@ using Demo.DbMigrator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DbMigrator.Migrations
+namespace DbMigrator.SqlServer
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220530014540_Base_CommonFormConfig")]
+    partial class Base_CommonFormConfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,13 +220,9 @@ namespace DbMigrator.Migrations
                         .HasColumnType("bit")
                         .HasComment("否已删除");
 
-                    b.Property<int>("DisplayIndex")
-                        .HasColumnType("int")
-                        .HasComment("显示索引");
-
-                    b.Property<string>("ErrorMessage")
+                    b.Property<string>("DisplayIndex")
                         .HasColumnType("nvarchar(max)")
-                        .HasComment("错误信息");
+                        .HasComment("显示索引");
 
                     b.Property<string>("ForegroundExpression")
                         .HasColumnType("nvarchar(max)")
@@ -234,13 +232,13 @@ namespace DbMigrator.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComment("列头");
 
-                    b.Property<string>("HeaderStyle")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("列头样式，赞未实现");
-
                     b.Property<int>("HorizontalAlignment")
                         .HasColumnType("int")
                         .HasComment("对齐方式 Left = 0,Center = 1,Right = 2,Stretch = 3");
+
+                    b.Property<bool>("IsFrozen")
+                        .HasColumnType("bit")
+                        .HasComment("是否冻结");
 
                     b.Property<bool>("IsReadOnly")
                         .HasColumnType("bit")
@@ -280,14 +278,6 @@ namespace DbMigrator.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComment("属性名");
 
-                    b.Property<string>("PropertyType")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("属性类型");
-
-                    b.Property<string>("Regex")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("正则校验表达式");
-
                     b.Property<string>("SortMemberPath")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("排序名");
@@ -307,7 +297,7 @@ namespace DbMigrator.Migrations
 
                     b.Property<int>("Type")
                         .HasColumnType("int")
-                        .HasComment("配置类型 查询=0，列表=1");
+                        .HasComment("配置类型 编辑项=0，列表=1");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)")

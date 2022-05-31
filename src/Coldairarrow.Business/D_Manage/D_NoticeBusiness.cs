@@ -32,6 +32,18 @@ namespace Coldairarrow.Business.D_Manage
         {
             var search = input.Search;
             var q = await SetQueryable(search);
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_NoticeDTO, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    q = q.Where(newWhere);
+                }
+            }
+
             var list = await q.GetPageResultAsync(input);
             return list;
         }
@@ -42,7 +54,7 @@ namespace Coldairarrow.Business.D_Manage
             {
                 UserId = b.CreatorId
             };
-            
+
             select = select.BuildExtendSelectExpre();
 
             var q_User = Db.GetIQueryable<D_Notice>();
@@ -101,6 +113,7 @@ namespace Coldairarrow.Business.D_Manage
                 q = q.Where(p => p.Id == search.noticeId);
             }
 
+            //筛选
             if (!search.keyword.IsNullOrEmpty())
             {
                 var keyword = $"%{search.keyword}%";
@@ -156,6 +169,17 @@ namespace Coldairarrow.Business.D_Manage
                 return 0;
             }
 
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_NoticeDTO, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    q = q.Where(newWhere);
+                }
+            }
+
             if (search.end == DateTime.MinValue || search.end == null)
             {
                 search.end = DateTime.Now;
@@ -182,6 +206,17 @@ namespace Coldairarrow.Business.D_Manage
             }
             var q = await SetQueryable(search);
 
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_NoticeDTO, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    q = q.Where(newWhere);
+                }
+            }
+
             if (search.end == DateTime.MinValue || search.end == null)
             {
                 search.end = DateTime.Now;
@@ -207,6 +242,17 @@ namespace Coldairarrow.Business.D_Manage
                 search.status = 1;
             }
             var q = await SetQueryable(search);
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_NoticeDTO, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    q = q.Where(newWhere);
+                }
+            }
 
             if (search.end == DateTime.MinValue || search.end == null)
             {

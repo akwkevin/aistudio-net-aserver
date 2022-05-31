@@ -69,6 +69,17 @@ namespace Coldairarrow.Business.OA_Manage
                 where = where.And(newWhere);
             }
 
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<OA_UserForm, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
+            }
+
             if (!input.Search.userId.IsNullOrEmpty())
             {
                 where = where.And(p => p.UserIds.Contains("^" + input.Search.userId + "^") && p.Status == (int)OAStatus.Being);

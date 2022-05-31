@@ -5,6 +5,7 @@ using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Coldairarrow.Business.Base_Manage
@@ -23,12 +24,25 @@ namespace Coldairarrow.Business.Base_Manage
             var q = GetIQueryable();
             var where = LinqHelper.True<Base_AppSecret>();
             var search = input.Search;
+
+            //筛选
             if (!search.keyword.IsNullOrEmpty())
             {
                 where = where.And(x =>
                     x.AppId.Contains(search.keyword)
                     || x.AppSecret.Contains(search.keyword)
                     || x.AppName.Contains(search.keyword));
+            }
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<Base_AppSecret, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
             }
 
             return await q.Where(where).GetPageResultAsync(input);

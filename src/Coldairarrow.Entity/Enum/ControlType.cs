@@ -15,14 +15,19 @@ namespace Coldairarrow.Entity
         DatePicker,
         TreeSelect,
         MultiComboBox,
-        IntegerUpDown,
+        MultiTreeSelect,
+        CheckBox,
+        ToggleButton,
+
+        IntegerUpDown = 100,
         LongUpDown,
         DoubleUpDown,
         DecimalUpDown,
         DateTimeUpDown,
+
+        Query = 200,
+        Submit,
         Add,
         Delete,
-        Query,
-        Submit
     }
 }

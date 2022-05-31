@@ -4,14 +4,16 @@ using Demo.DbMigrator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DbMigrator.Migrations
+namespace DbMigrator.SqlServer
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220530070239_Base_CommonFormConfig2")]
+    partial class Base_CommonFormConfig2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -222,10 +224,6 @@ namespace DbMigrator.Migrations
                         .HasColumnType("int")
                         .HasComment("显示索引");
 
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("错误信息");
-
                     b.Property<string>("ForegroundExpression")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("前景颜色触发公式");
@@ -234,13 +232,13 @@ namespace DbMigrator.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComment("列头");
 
-                    b.Property<string>("HeaderStyle")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("列头样式，赞未实现");
-
                     b.Property<int>("HorizontalAlignment")
                         .HasColumnType("int")
                         .HasComment("对齐方式 Left = 0,Center = 1,Right = 2,Stretch = 3");
+
+                    b.Property<bool>("IsFrozen")
+                        .HasColumnType("bit")
+                        .HasComment("是否冻结");
 
                     b.Property<bool>("IsReadOnly")
                         .HasColumnType("bit")
@@ -279,14 +277,6 @@ namespace DbMigrator.Migrations
                     b.Property<string>("PropertyName")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("属性名");
-
-                    b.Property<string>("PropertyType")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("属性类型");
-
-                    b.Property<string>("Regex")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("正则校验表达式");
 
                     b.Property<string>("SortMemberPath")
                         .HasColumnType("nvarchar(max)")

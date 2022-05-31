@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Coldairarrow.Business.Base_Manage
@@ -30,10 +31,23 @@ namespace Coldairarrow.Business.Base_Manage
         {
             var where = LinqHelper.True<Base_Role>();
             var search = input.Search;
+
+            //筛选
             if (!search.roleId.IsNullOrEmpty())
                 where = where.And(x => x.Id == search.roleId);
             if (!search.roleName.IsNullOrEmpty())
                 where = where.And(x => x.RoleName.Contains(search.roleName));
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<Base_Role, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
+            }
 
             var page = await GetIQueryable()
                 .Where(where)

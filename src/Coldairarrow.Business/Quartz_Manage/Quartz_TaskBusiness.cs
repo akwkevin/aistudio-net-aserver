@@ -37,6 +37,17 @@ namespace Coldairarrow.Business.Quartz_Manage
                 where = where.And(newWhere);
             }
 
+            //按字典筛选
+            if (pagination.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in pagination.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<Quartz_Task, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
+            }
+
             return await q.Where(where).ProjectTo<Quartz_Task>(_mapper.ConfigurationProvider).GetPageResultAsync(pagination);
         }
 

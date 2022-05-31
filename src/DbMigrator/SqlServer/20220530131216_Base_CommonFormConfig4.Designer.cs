@@ -4,14 +4,16 @@ using Demo.DbMigrator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DbMigrator.Migrations
+namespace DbMigrator.SqlServer
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220530131216_Base_CommonFormConfig4")]
+    partial class Base_CommonFormConfig4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -222,10 +224,6 @@ namespace DbMigrator.Migrations
                         .HasColumnType("int")
                         .HasComment("显示索引");
 
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("错误信息");
-
                     b.Property<string>("ForegroundExpression")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("前景颜色触发公式");
@@ -283,10 +281,6 @@ namespace DbMigrator.Migrations
                     b.Property<string>("PropertyType")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("属性类型");
-
-                    b.Property<string>("Regex")
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("正则校验表达式");
 
                     b.Property<string>("SortMemberPath")
                         .HasColumnType("nvarchar(max)")

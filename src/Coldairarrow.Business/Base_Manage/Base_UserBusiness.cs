@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -53,6 +54,7 @@ namespace Coldairarrow.Business.Base_Manage
                     from b in ab.DefaultIfEmpty()
                     select @select.Invoke(a, b);
 
+            //筛选
             q = q.WhereIf(!search.userId.IsNullOrEmpty(), x => x.Id == search.userId);
             if (!search.keyword.IsNullOrEmpty())
             {
@@ -60,6 +62,17 @@ namespace Coldairarrow.Business.Base_Manage
                 q = q.Where(x =>
                       EF.Functions.Like(x.UserName, keyword)
                       || EF.Functions.Like(x.RealName, keyword));
+            }
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<Base_UserDTO, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    q = q.Where(newWhere);
+                }
             }
 
             var list = await q.GetPageResultAsync(input);

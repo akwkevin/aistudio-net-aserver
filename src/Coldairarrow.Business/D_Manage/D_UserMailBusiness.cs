@@ -48,6 +48,18 @@ namespace Coldairarrow.Business.D_Manage
             {
                 where = where.And(p => p.CreatorId.Contains(input.Search.creatorId));
             }
+
+            //按字典筛选
+            if (input.SearchKeyValues != null)
+            {
+                foreach (var keyValuePair in input.SearchKeyValues)
+                {
+                    var newWhere = DynamicExpressionParser.ParseLambda<D_UserMail, bool>(
+                        ParsingConfig.Default, false, $@"{keyValuePair.Key}.Contains(@0)", keyValuePair.Value);
+                    where = where.And(newWhere);
+                }
+            }
+
             where = where.And(p => (int)p.Status == input.Search.status);
 
             return await q.Where(where).GetPageResultAsync(input);
