@@ -311,7 +311,7 @@ namespace Coldairarrow.Api
                 };
 
                 var result = await commonFormConfigBusiness.InsertAsync(commonFormConfigs);
-                logger.LogTrace("dictionary created");
+                logger.LogTrace("commonFormConfig created");
             }
 
             if (configuration.GetSection("UseQuartz").Get<bool>() == true)
