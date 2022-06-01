@@ -58,6 +58,11 @@ namespace Coldairarrow.Api.Controllers.Base_Manage
         {
             if (!input.newPwd.IsNullOrEmpty())
                 input.Password = input.newPwd.ToMD5String();
+            else if (!input.Password.IsNullOrEmpty() && !input.Password.IsMd5())
+            {
+                input.Password = input.Password.ToMD5String();
+            }
+
             if (input.Id.IsNullOrEmpty())
             {
                 InitEntity(input);
