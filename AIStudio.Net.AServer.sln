@@ -38,8 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIStudio.WpfApi", "src\AIStudio.WpfApi\AIStudio.WpfApi.csproj", "{C9415BE9-8959-46CD-A55C-D773C188694B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EFCore.Sharding", "EFCore.Sharding", "{D7375B91-46EC-44A5-8B2F-BA94E94593B4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.Sharding", "src\EFCore.Sharding\src\EFCore.Sharding\EFCore.Sharding.csproj", "{8F190ACD-4C81-4A8F-A3A9-64BDF438E304}"
@@ -114,10 +112,6 @@ Global
 		{9F3239D3-E6F7-4D2B-B76C-1FC86CDAEEF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F3239D3-E6F7-4D2B-B76C-1FC86CDAEEF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F3239D3-E6F7-4D2B-B76C-1FC86CDAEEF8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9415BE9-8959-46CD-A55C-D773C188694B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9415BE9-8959-46CD-A55C-D773C188694B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9415BE9-8959-46CD-A55C-D773C188694B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9415BE9-8959-46CD-A55C-D773C188694B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8F190ACD-4C81-4A8F-A3A9-64BDF438E304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8F190ACD-4C81-4A8F-A3A9-64BDF438E304}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F190ACD-4C81-4A8F-A3A9-64BDF438E304}.Release|Any CPU.ActiveCfg = Release|Any CPU
