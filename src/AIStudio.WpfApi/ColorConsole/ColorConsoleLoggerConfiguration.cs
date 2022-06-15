@@ -10,7 +10,10 @@ namespace AIStudio.WpfApi
 
         public Dictionary<LogLevel, ConsoleColor> LogLevels { get; set; } = new()
         {
-            [LogLevel.Information] = ConsoleColor.Green
+            [LogLevel.Error] = ConsoleColor.Red,
+            [LogLevel.Warning] = ConsoleColor.Yellow,           
+            [LogLevel.Information] = ConsoleColor.Green,
+            [LogLevel.Debug] = ConsoleColor.Gray,
         };
     }
 }

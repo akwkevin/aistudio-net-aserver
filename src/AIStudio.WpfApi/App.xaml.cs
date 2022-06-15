@@ -21,18 +21,16 @@ namespace AIStudio.WpfApi
     /// </summary>
     public partial class App : Application
     {
-		protected override async void OnStartup(StartupEventArgs args)
-		{
-			base.OnStartup(args);
+        protected override async void OnStartup(StartupEventArgs args)
+        {
+            base.OnStartup(args);
 
             await Host.CreateDefaultBuilder(args.Args)
                   .ConfigureLogging((context, logger) =>
                     logger.AddColorConsoleLogger(configuration =>
                     {
                         configuration.LogLevels.Add(
-                            LogLevel.Warning, ConsoleColor.DarkMagenta);
-                        configuration.LogLevels.Add(
-                            LogLevel.Error, ConsoleColor.Red);
+                            LogLevel.Critical, ConsoleColor.DarkRed);
                     }))
                    .UseIdHelper()
                    .UseCache()
@@ -80,6 +78,7 @@ namespace AIStudio.WpfApi
                                case DatabaseType.SqlServer: services.AddWorkflow(x => x.UseSqlServer(dbOptions.ConnectionString, false, true)); break;
                                case DatabaseType.MySql: services.AddWorkflow(x => x.UseMySQL(dbOptions.ConnectionString, false, true)); break;
                                case DatabaseType.PostgreSql: services.AddWorkflow(x => x.UsePostgreSQL(dbOptions.ConnectionString, false, true)); break;
+                               case DatabaseType.SQLite: services.AddWorkflow(x => x.UseSqlite(dbOptions.ConnectionString, true)); break;
                                default: throw new Exception("暂不支持该数据库！");
                            }
                            services.AddWorkflowDSL();
@@ -95,5 +94,5 @@ namespace AIStudio.WpfApi
                    .Build()
                    .RunAsync();
         }
-	}
+    }
 }

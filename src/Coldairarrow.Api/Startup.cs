@@ -29,7 +29,7 @@ namespace Coldairarrow.Api
 
         private readonly IConfiguration _configuration;
 
-        public void ConfigureServices(IServiceCollection services)
+        public async void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
             services.AddControllers(options =>
@@ -66,7 +66,7 @@ namespace Coldairarrow.Api
           
         }
 
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //跨域
             app.UseCors(x =>
@@ -119,17 +119,17 @@ namespace Coldairarrow.Api
 
             if (_configuration.GetSection("UseWorkflow").Get<bool>() == true)
             {
-                await app.UseWorkflow();
+                app.UseWorkflow();
             }
         }
 
 
 
-        private async void InitData(IServiceProvider serviceProvider)
+        private void InitData(IServiceProvider serviceProvider)
         {
             using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {    
-                await SeedData.EnsureSeedData(serviceScope.ServiceProvider);
+                SeedData.EnsureSeedData(serviceScope.ServiceProvider);
             }
         }
 

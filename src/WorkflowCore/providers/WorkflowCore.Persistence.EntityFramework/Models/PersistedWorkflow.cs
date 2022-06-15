@@ -8,7 +8,6 @@ using WorkflowCore.Models;
 
 namespace WorkflowCore.Persistence.EntityFramework.Models
 {
-    [Table("Workflow")]
     public class PersistedWorkflow
     {
         [Key]

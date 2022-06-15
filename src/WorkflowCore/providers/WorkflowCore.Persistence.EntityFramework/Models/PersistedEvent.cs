@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace WorkflowCore.Persistence.EntityFramework.Models
 {
-    [Table("Event")]
     public class PersistedEvent
     {
         [Key]

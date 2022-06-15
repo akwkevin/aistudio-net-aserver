@@ -1,9 +1,11 @@
 ﻿using Coldairarrow.Business.OA_Manage;
+using Coldairarrow.Entity.OA_Manage;
 using Coldairarrow.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WorkflowCore.Interface;
 using WorkflowCore.Services.DefinitionStorage;
@@ -15,21 +17,21 @@ namespace AIStudio.Service.WorkflowCore
     /// </summary>
     public static class WorkflowExtension
     {
+        public static List<OA_DefForm> DefForms = new List<OA_DefForm>();
         /// <summary>
         /// 初始化工作流
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static async Task<IApplicationBuilder> UseWorkflow(this IApplicationBuilder app)
+        public static IApplicationBuilder UseWorkflow(this IApplicationBuilder app)
         {
             IServiceProvider services = app.ApplicationServices;
 
-            IDefinitionLoader _definitionLoader = services.GetService<IDefinitionLoader>();
-            IOA_DefFormBusiness _oA_DefFormBusiness = services.GetService<IOA_DefFormBusiness>();
+            IDefinitionLoader _definitionLoader = services.GetService<IDefinitionLoader>();     
             ILogger _logger = services.GetService<ILogger<OAExtension>>();
 
-            var defforms = await _oA_DefFormBusiness.GetListAsync();
-            foreach(var defform in defforms)
+      
+            foreach(var defform in DefForms)
             {
                 try
                 {
